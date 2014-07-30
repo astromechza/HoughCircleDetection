@@ -16,12 +16,14 @@ public class CliDriver
         try
         {
             PopUp.Show(
-                new SobelEdgeDetectStage().flow(
-                    new NormalizeStage().flow(
-                        new InvertStage().flow(
-                            Greyscale.Convert(
-                                ImageLoader.Load("samples/testseq100000.gif"),
-                                new Greyscale.FormulaAverage()
+                new NormalizeStage().flow(
+                    new SobelEdgeDetectStage().flow(
+                        new NormalizeStage().flow(
+                            new InvertStage().flow(
+                                Greyscale.Convert(
+                                    ImageLoader.Load("samples/testseq100000.gif"),
+                                    new Greyscale.FormulaAverage()
+                                )
                             )
                         )
                     )
