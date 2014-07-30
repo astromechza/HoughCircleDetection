@@ -7,12 +7,14 @@ public class HoughFilterStage implements IStage
 {
     private final int minCircleRadius;
     private final int maxCircleRadius;
-    private ArrayList<IntPoint>[] circlePoints;
+    private final ArrayList<IntPoint>[] circlePoints;
+    private final boolean normaliseWithRadii;
 
-    public HoughFilterStage(int minCircleRadius, int maxCircleRadius)
+    public HoughFilterStage(int minCircleRadius, int maxCircleRadius, boolean normaliseWithRadii)
     {
         this.minCircleRadius = minCircleRadius;
         this.maxCircleRadius = maxCircleRadius;
+        this.normaliseWithRadii = normaliseWithRadii;
         int numsizes = maxCircleRadius - minCircleRadius;
         this.circlePoints = new ArrayList[(maxCircleRadius-minCircleRadius)];
         for(int r=0;r<numsizes;r++)
@@ -41,7 +43,7 @@ public class HoughFilterStage implements IStage
     @Override
     public ShortImageBuffer flow(ShortImageBuffer before)
     {
-        HoughSpace space = new HoughSpace(before.getHeight(), before.getWidth(),this.minCircleRadius, this.maxCircleRadius, false);
+        HoughSpace space = new HoughSpace(before.getHeight(), before.getWidth(),this.minCircleRadius, this.maxCircleRadius, this.normaliseWithRadii);
 
         for(int y=0;y<before.getHeight();y++)
         {

@@ -3,6 +3,7 @@ package org.uct.cs.hough;
 import org.uct.cs.hough.display.PopUp;
 import org.uct.cs.hough.reader.ImageLoader;
 import org.uct.cs.hough.stages.*;
+import org.uct.cs.hough.writer.ImageWriter;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
@@ -32,11 +33,11 @@ public class CliDriver
                     )
             );
 
-            PopUp.Show(
-                new HoughFilterStage(5, 50).flow(
-                    edges
-                ).toImage()
-            );
+            ShortImageBuffer houghed = new HoughFilterStage(7, 50, true).flow(edges);
+
+            PopUp.Show(houghed.toImage());
+
+            ImageWriter.Save(houghed.toImage(), "samples/out.png", ImageWriter.ImageFormat.PNG);
         }
         catch (IOException e)
         {
