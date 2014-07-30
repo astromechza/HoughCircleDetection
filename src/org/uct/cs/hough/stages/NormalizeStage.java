@@ -1,6 +1,6 @@
-package org.uct.cs.hough.pipes;
+package org.uct.cs.hough.stages;
 
-public class NormalizePipe
+public class NormalizeStage implements IStage
 {
     public ShortImageBuffer flow(ShortImageBuffer before)
     {

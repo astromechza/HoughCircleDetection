@@ -1,6 +1,6 @@
-package org.uct.cs.hough.pipes;
+package org.uct.cs.hough.stages;
 
-public class InvertPipe implements IPipe
+public class InvertStage implements IStage
 {
     public ShortImageBuffer flow(ShortImageBuffer before)
     {

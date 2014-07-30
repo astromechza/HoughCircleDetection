@@ -1,6 +1,6 @@
-package org.uct.cs.hough.pipes;
+package org.uct.cs.hough.stages;
 
-public interface IPipe
+public interface IStage
 {
     public ShortImageBuffer flow(ShortImageBuffer before);
 }

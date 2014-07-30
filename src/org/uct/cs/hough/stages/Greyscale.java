@@ -1,4 +1,4 @@
-package org.uct.cs.hough.pipes;
+package org.uct.cs.hough.stages;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
