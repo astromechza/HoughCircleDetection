@@ -11,14 +11,14 @@ import java.io.IOException;
 public class CliDriver
 {
     private static final int MIN_RADIUS = 5;
-    private static final int MAX_RADIUS = 50;
+    private static final int MAX_RADIUS = 100;
     private static final int EDGE_THRESHOLD = 210;
 
     public static void main(String[] args)
     {
         try
         {
-            BufferedImage original = ImageLoader.Load("samples/testseq100000.gif");
+            BufferedImage original = ImageLoader.Load("samples/testseq100136.gif");
 
             PopUp.Show(original);
 
@@ -32,7 +32,7 @@ public class CliDriver
                 )
             );
 
-            ShortImageBuffer houghed = new HoughFilterStage(MIN_RADIUS, MAX_RADIUS, true).flow(edges);
+            ShortImageBuffer houghed = new HoughFilterStage(MIN_RADIUS, MAX_RADIUS, false).flow(edges);
 
             PopUp.Show(houghed.toImage());
 
