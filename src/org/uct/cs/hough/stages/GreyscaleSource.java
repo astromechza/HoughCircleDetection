@@ -3,9 +3,17 @@ package org.uct.cs.hough.stages;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 
-public class Greyscale
+public class GreyscaleSource implements ISource
 {
-    public static ShortImageBuffer Convert(BufferedImage image, IFormula formula)
+    private final Formula formula;
+
+    public GreyscaleSource(Formula formula)
+    {
+        this.formula = formula;
+    }
+
+    @Override
+    public ShortImageBuffer source(BufferedImage image)
     {
         int w = image.getWidth();
         int h = image.getHeight();
@@ -17,7 +25,7 @@ public class Greyscale
         {
             for(int x=0;x<w;x++)
             {
-                output.set(y, x, formula.combine(pixels[index+2], pixels[index+1], pixels[index]));
+                output.set(y, x, this.formula.combine(pixels[index+2], pixels[index+1], pixels[index]));
                 index += 3;
             }
         }
@@ -61,6 +69,25 @@ public class Greyscale
                 0.72f * (g & 0xFF) +
                 0.07f * (b & 0xFF)
             );
+        }
+    }
+
+    public enum Formula
+    {
+        AVERAGE(new FormulaAverage()),
+        LIGHTNESS(new FormulaLightness()),
+        LUMINOSITY(new FormulaLuminosity());
+
+        private final IFormula f;
+
+        Formula(IFormula f)
+        {
+            this.f = f;
+        }
+
+        public short combine(byte r, byte g, byte b)
+        {
+            return this.f.combine(r,g,b);
         }
     }
 
