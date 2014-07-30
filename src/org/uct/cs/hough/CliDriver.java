@@ -2,7 +2,10 @@ package org.uct.cs.hough;
 
 import org.uct.cs.hough.display.PopUp;
 import org.uct.cs.hough.reader.ImageLoader;
-import org.uct.cs.hough.stages.*;
+import org.uct.cs.hough.stages.Greyscale;
+import org.uct.cs.hough.stages.NormalizeStage;
+import org.uct.cs.hough.stages.SobelEdgeDetectStage;
+import org.uct.cs.hough.stages.ThresholdStage;
 
 import java.io.IOException;
 
@@ -17,11 +20,9 @@ public class CliDriver
                     new NormalizeStage().flow(
                         new SobelEdgeDetectStage().flow(
                             new NormalizeStage().flow(
-                                new InvertStage().flow(
-                                    Greyscale.Convert(
-                                        ImageLoader.Load("samples/testseq100000.gif"),
-                                        new Greyscale.FormulaAverage()
-                                    )
+                                Greyscale.Convert(
+                                    ImageLoader.Load("samples/testseq100000.gif"),
+                                    new Greyscale.FormulaAverage()
                                 )
                             )
                         )
