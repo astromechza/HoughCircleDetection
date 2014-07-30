@@ -1,26 +1,26 @@
 package org.uct.cs.hough.reader;
 
-import com.sun.imageio.plugins.gif.GIFImageReader;
-import com.sun.imageio.plugins.gif.GIFImageReaderSpi;
-
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-public class ImageReaderGIF extends IImageReader
+public class ImageLoader
 {
+
     public static BufferedImage Load(File f) throws IOException
     {
-        ImageReader r = new GIFImageReader(new GIFImageReaderSpi());
-        r.setInput(ImageIO.createImageInputStream(f));
+        BufferedImage before = ImageIO.read(f);
 
-        return r.read(0);
+        BufferedImage after = new BufferedImage(before.getWidth(), before.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        after.getGraphics().drawImage(before, 0, 0, null);
+        return after;
     }
 
     public static BufferedImage Load(String s) throws IOException
     {
         return Load(new File(s));
     }
+
+
 }

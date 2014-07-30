@@ -1,9 +1,11 @@
 package org.uct.cs.hough;
 
-import org.uct.cs.hough.reader.ImageReaderGIF;
-import org.uct.cs.hough.writer.ImageWriter;
+import org.uct.cs.hough.display.PopUp;
+import org.uct.cs.hough.pipes.Greyscale;
+import org.uct.cs.hough.pipes.InvertPipe;
+import org.uct.cs.hough.pipes.NormalizePipe;
+import org.uct.cs.hough.reader.ImageLoader;
 
-import java.io.File;
 import java.io.IOException;
 
 public class CliDriver
@@ -12,10 +14,15 @@ public class CliDriver
     {
         try
         {
-            ImageWriter.Save(
-                ImageReaderGIF.Load(new File("samples/testseq100000.gif")),
-                new File("samples/testseq100000.jpg"),
-                ImageWriter.ImageFormat.JPG
+            PopUp.Show(
+                new NormalizePipe().flow(
+                    new InvertPipe().flow(
+                        Greyscale.Convert(
+                            ImageLoader.Load("samples/testseq100000.gif"),
+                            new Greyscale.FormulaAverage()
+                        )
+                    )
+                ).toImage()
             );
         }
         catch (IOException e)
