@@ -1,9 +1,9 @@
 package org.uct.cs.hough;
 
-public class GuiDriver
+class GuiDriver
 {
     public static void main(String[] args)
     {
-
+        System.out.println();
     }
 }

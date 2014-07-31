@@ -1,5 +1,7 @@
 package org.uct.cs.hough.stages;
 
+import org.uct.cs.hough.util.Constants;
+
 public class ThresholdStage implements IStage
 {
     private final int threshold;
@@ -17,7 +19,7 @@ public class ThresholdStage implements IStage
         {
             for(int x=0;x<before.getWidth();x++)
             {
-                int v = before.get(y, x) & 0xFF;
+                int v = before.get(y, x) & Constants.BYTE;
                 if (v > this.threshold) after.set(y, x, (short)(v));
             }
         }

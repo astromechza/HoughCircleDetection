@@ -6,25 +6,18 @@ import java.awt.image.BufferedImage;
 
 public class PopUp
 {
-    private BufferedImage image;
 
     // components
-    private JFrame frame;
-    private ImagePanel panel;
+    private final JFrame frame;
 
-    public PopUp(BufferedImage bi)
+    public PopUp(BufferedImage image)
     {
-        this.image = bi;
-
         this.frame = new JFrame("Image");
         this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.frame.setResizable(false);
         this.frame.setLayout(new BorderLayout());
-        this.panel = new ImagePanel(this.image);
-        this.frame.add(panel, BorderLayout.CENTER);
-
+        this.frame.add(new ImagePanel(image), BorderLayout.CENTER);
         this.frame.pack();
-
         this.frame.setLocationRelativeTo(null);
     }
 
@@ -40,7 +33,7 @@ public class PopUp
 
     private class ImagePanel extends JPanel
     {
-        private BufferedImage image;
+        private final BufferedImage image;
 
         public ImagePanel(BufferedImage image)
         {
@@ -51,7 +44,7 @@ public class PopUp
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);
-            if(image != null) g.drawImage(image, 0, 0, this);
+            g.drawImage(image, 0, 0, this);
         }
 
         @Override

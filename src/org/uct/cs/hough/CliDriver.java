@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CliDriver
+class CliDriver
 {
     private static final int MIN_RADIUS = 10;
     private static final int MAX_RADIUS = 100;

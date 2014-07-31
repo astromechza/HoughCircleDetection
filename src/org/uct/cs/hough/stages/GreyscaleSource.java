@@ -1,5 +1,7 @@
 package org.uct.cs.hough.stages;
 
+import org.uct.cs.hough.util.Constants;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 
@@ -43,7 +45,7 @@ public class GreyscaleSource implements ISource
         @Override
         public short combine(byte r, byte g, byte b)
         {
-            return (short) (((r & 0xFF) + (g & 0xFF) + (b & 0xFF)) / 3);
+            return (short) (((r & Constants.BYTE) + (g & Constants.BYTE) + (b & Constants.BYTE)) / 3);
         }
     }
 
@@ -53,21 +55,24 @@ public class GreyscaleSource implements ISource
         public short combine(byte r, byte g, byte b)
         {
             return (short)((
-                Math.max(Math.max(r & 0xFF, g & 0xFF), b & 0xFF) +
-                Math.min(Math.min(r & 0xFF, g & 0xFF), b & 0xFF)
+                Math.max(Math.max(r & Constants.BYTE, g & Constants.BYTE), b & Constants.BYTE) +
+                Math.min(Math.min(r & Constants.BYTE, g & Constants.BYTE), b & Constants.BYTE)
             )/2);
         }
     }
 
+    private static final float REDLUM = 0.21f;
+    private static final float GREENLUM = 0.72f;
+    private static final float BLUELUM = 0.01f;
     public static class FormulaLuminosity implements IFormula
     {
         @Override
         public short combine(byte r, byte g, byte b)
         {
             return (short)(
-                0.21f * (r & 0xFF) +
-                0.72f * (g & 0xFF) +
-                0.07f * (b & 0xFF)
+                REDLUM * (r & Constants.BYTE) +
+                GREENLUM * (g & Constants.BYTE) +
+                BLUELUM * (b & Constants.BYTE)
             );
         }
     }

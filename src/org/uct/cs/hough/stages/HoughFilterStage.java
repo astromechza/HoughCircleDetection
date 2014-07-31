@@ -1,14 +1,15 @@
 package org.uct.cs.hough.stages;
 
+import org.uct.cs.hough.util.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class HoughFilterStage implements IStage
 {
     private final int minCircleRadius;
     private final int maxCircleRadius;
-    private final ArrayList<IntPoint>[] circlePoints;
+    private final List<List<IntPoint>> circlePoints;
     private final boolean normaliseWithRadii;
     private final int[] circumpherenceLengths;
     private HoughSpace currentHoughSpace;
@@ -19,17 +20,17 @@ public class HoughFilterStage implements IStage
         this.maxCircleRadius = maxCircleRadius;
         this.normaliseWithRadii = normaliseWithRadii;
         int numsizes = maxCircleRadius - minCircleRadius;
-        this.circlePoints = new ArrayList[(maxCircleRadius-minCircleRadius)];
+        this.circlePoints = new ArrayList<>();
         this.circumpherenceLengths = new int[(maxCircleRadius-minCircleRadius)];
         for(int r=0;r<numsizes;r++)
         {
-            this.circlePoints[r] = new ArrayList<>();
+            List<IntPoint> points = new ArrayList<>();
             int x = minCircleRadius + r, y = 0;
             int radiusError = 1-x;
 
             while(x >= y)
             {
-                this.circlePoints[r].add(new IntPoint(x, y));
+                points.add(new IntPoint(x, y));
                 y++;
                 if (radiusError<0)
                 {
@@ -42,7 +43,8 @@ public class HoughFilterStage implements IStage
                 }
             }
 
-            this.circumpherenceLengths[r] = this.circlePoints[r].size();
+            this.circlePoints.add(points);
+            this.circumpherenceLengths[r] = points.size();
         }
     }
 
@@ -55,13 +57,13 @@ public class HoughFilterStage implements IStage
         {
             for(int x=0;x<before.getWidth();x++)
             {
-                int v = before.get(y, x) & 0xFF;
+                int v = before.get(y, x) & Constants.BYTE;
                 if (v > 0)
                 {
-                    int radii = this.circlePoints.length;
+                    int radii = this.circlePoints.size();
                     for(int r=0;r<radii;r++)
                     {
-                        for(IntPoint p : this.circlePoints[r])
+                        for(IntPoint p : this.circlePoints.get(r))
                         {
                             this.currentHoughSpace.inc(y+p.y,x+p.x,r);
                             this.currentHoughSpace.inc(y+p.x,x+p.y,r);
@@ -82,7 +84,7 @@ public class HoughFilterStage implements IStage
         {
             for (int x = 0; x < before.getWidth(); x++)
             {
-                int v = (int)((this.currentHoughSpace.getMax(y,x) / this.currentHoughSpace.getBestMax()) * 255);
+                int v = (int)((this.currentHoughSpace.getMax(y,x) / this.currentHoughSpace.getBestMax()) * Constants.BYTE);
                 after.set(y,x,(short)v);
             }
         }
@@ -97,13 +99,13 @@ public class HoughFilterStage implements IStage
 
     public class HoughSpace
     {
-        private int[][][] data;
-        private float[][] maximums;
-        private int[][] maxradii;
-        private int width, height, minRadii;
+        private final int[][][] data;
+        private final float[][] maximums;
+        private final int[][] maxradii;
+        private final int width, height, minRadii;
         private float highestMaximum;
-        private boolean normaliseWithRadii;
-        private int[] circumpherenceLengths;
+        private final boolean normaliseWithRadii;
+        private final int[] circumpherenceLengths;
 
         public HoughSpace(int height, int width, int minRadii, int maxRadii, boolean normaliseWithRadii, int[] circumpherenceLengths)
         {
