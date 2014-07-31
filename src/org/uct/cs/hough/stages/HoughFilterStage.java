@@ -11,6 +11,7 @@ public class HoughFilterStage implements IStage
     private final ArrayList<IntPoint>[] circlePoints;
     private final boolean normaliseWithRadii;
     private final int[] circumpherenceLengths;
+    private HoughSpace currentHoughSpace;
 
     public HoughFilterStage(int minCircleRadius, int maxCircleRadius, boolean normaliseWithRadii)
     {
@@ -48,7 +49,7 @@ public class HoughFilterStage implements IStage
     @Override
     public ShortImageBuffer flow(ShortImageBuffer before)
     {
-        HoughSpace space = new HoughSpace(before.getHeight(), before.getWidth(),this.minCircleRadius, this.maxCircleRadius, this.normaliseWithRadii, this.circumpherenceLengths);
+        this.currentHoughSpace = new HoughSpace(before.getHeight(), before.getWidth(),this.minCircleRadius, this.maxCircleRadius, this.normaliseWithRadii, this.circumpherenceLengths);
 
         for(int y=0;y<before.getHeight();y++)
         {
@@ -62,14 +63,14 @@ public class HoughFilterStage implements IStage
                     {
                         for(IntPoint p : this.circlePoints[r])
                         {
-                            space.inc(y+p.y,x+p.x,r);
-                            space.inc(y+p.x,x+p.y,r);
-                            space.inc(y+p.y,x-p.x,r);
-                            space.inc(y+p.x,x-p.y,r);
-                            space.inc(y-p.y,x-p.x,r);
-                            space.inc(y-p.x,x-p.y,r);
-                            space.inc(y-p.y,x+p.x,r);
-                            space.inc(y-p.x,x+p.y,r);
+                            this.currentHoughSpace.inc(y+p.y,x+p.x,r);
+                            this.currentHoughSpace.inc(y+p.x,x+p.y,r);
+                            this.currentHoughSpace.inc(y+p.y,x-p.x,r);
+                            this.currentHoughSpace.inc(y+p.x,x-p.y,r);
+                            this.currentHoughSpace.inc(y-p.y,x-p.x,r);
+                            this.currentHoughSpace.inc(y-p.x,x-p.y,r);
+                            this.currentHoughSpace.inc(y-p.y,x+p.x,r);
+                            this.currentHoughSpace.inc(y-p.x,x+p.y,r);
                         }
                     }
                 }
@@ -81,7 +82,7 @@ public class HoughFilterStage implements IStage
         {
             for (int x = 0; x < before.getWidth(); x++)
             {
-                int v = (int)((space.getMax(y,x) / space.getBestMax()) * 255);
+                int v = (int)((this.currentHoughSpace.getMax(y,x) / this.currentHoughSpace.getBestMax()) * 255);
                 after.set(y,x,(short)v);
             }
         }
@@ -89,7 +90,12 @@ public class HoughFilterStage implements IStage
         return after;
     }
 
-    private class HoughSpace
+    public HoughSpace getLastHoughSpace()
+    {
+        return this.currentHoughSpace;
+    }
+
+    public class HoughSpace
     {
         private int[][][] data;
         private float[][] maximums;
