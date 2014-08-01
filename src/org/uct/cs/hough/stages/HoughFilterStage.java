@@ -1,6 +1,7 @@
 package org.uct.cs.hough.stages;
 
 import org.uct.cs.hough.util.Constants;
+import org.uct.cs.hough.util.IntIntPair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +10,12 @@ public class HoughFilterStage implements IStage
 {
     private final int minCircleRadius;
     private final int maxCircleRadius;
-    private final List<List<IntPoint>> circlePoints;
-    private final boolean normaliseWithRadii;
+
+    private final List<List<IntIntPair>> circlePoints;
     private final int[] circumpherenceLengths;
+
+    private final boolean normaliseWithRadii;
+
     private HoughSpace currentHoughSpace;
 
     public HoughFilterStage(int minCircleRadius, int maxCircleRadius, boolean normaliseWithRadii)
@@ -19,18 +23,19 @@ public class HoughFilterStage implements IStage
         this.minCircleRadius = minCircleRadius;
         this.maxCircleRadius = maxCircleRadius;
         this.normaliseWithRadii = normaliseWithRadii;
+
         int numsizes = maxCircleRadius - minCircleRadius;
         this.circlePoints = new ArrayList<>();
-        this.circumpherenceLengths = new int[(maxCircleRadius-minCircleRadius)];
+        this.circumpherenceLengths = new int[numsizes];
         for(int r=0;r<numsizes;r++)
         {
-            List<IntPoint> points = new ArrayList<>();
+            List<IntIntPair> points = new ArrayList<>();
             int x = minCircleRadius + r, y = 0;
             int radiusError = 1-x;
 
             while(x >= y)
             {
-                points.add(new IntPoint(x, y));
+                points.add(new IntIntPair(x, y));
                 y++;
                 if (radiusError<0)
                 {
@@ -63,7 +68,7 @@ public class HoughFilterStage implements IStage
                     int radii = this.circlePoints.size();
                     for(int r=0;r<radii;r++)
                     {
-                        for(IntPoint p : this.circlePoints.get(r))
+                        for(IntIntPair p : this.circlePoints.get(r))
                         {
                             this.currentHoughSpace.inc(y+p.y,x+p.x,r);
                             this.currentHoughSpace.inc(y+p.x,x+p.y,r);
@@ -148,18 +153,6 @@ public class HoughFilterStage implements IStage
         public float getBestMax()
         {
             return this.highestMaximum;
-        }
-    }
-
-    private class IntPoint
-    {
-        public final int x;
-        public final int y;
-
-        public IntPoint(int x, int y)
-        {
-            this.x = x;
-            this.y = y;
         }
     }
 }

@@ -25,7 +25,7 @@ class CliDriver
         {
             BufferedImage original = ImageLoader.Load("samples/testseq100007.gif");
 
-            PopUp.Show(original);
+            PopUp.Show(original, "Original");
 
             // setup pipe stages
             IStage edgeThresholder = new ThresholdStage(EDGE_THRESHOLD);
@@ -43,7 +43,7 @@ class CliDriver
                 )
             );
 
-            PopUp.Show(edges.toImage());
+            PopUp.Show(edges.toImage(), "Edges");
 
             HoughFilterStage houghFilter = new HoughFilterStage(MIN_RADIUS, MAX_RADIUS, true);
             ShortImageBuffer houghed = houghFilter.flow(edges);
@@ -63,11 +63,11 @@ class CliDriver
                 }
             }
 
-            PopUp.Show(CircleAdder.Draw(edges.toImage(), circles));
+            PopUp.Show(CircleAdder.Draw(edges.toImage(), circles), "Detected Circles");
 
-            PopUp.Show(houghed.toImage());
+            PopUp.Show(houghed.toImage(), "Hough Space");
 
-            PopUp.Show(circleCenters.toImage());
+            PopUp.Show(circleCenters.toImage(), "Centers");
 
             ImageWriter.Save(houghed.toImage(), "samples/out.png", ImageWriter.ImageFormat.PNG);
         }
