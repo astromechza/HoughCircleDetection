@@ -24,37 +24,39 @@ class CliDriver
     {
         try
         {
-            Timer ignored = new Timer("Circle Detector");
-            ShortImageBuffer original = ImageLoader.load("samples/testseq100007.gif");
-            ignored.print("read");
+            try(Timer ignored = new Timer("total"))
+            {
+                ShortImageBuffer original = ImageLoader.load("samples/testseq100007.gif");
+                ignored.print("read");
 
-            ShortImageBuffer edges = Thresholder.threshold(
-                Normalizer.norm(
-                    SobelEdgeDetector.apply(
-                        Normalizer.norm(original)
-                    )
-                ), EDGE_THRESHOLD
-            );
+                ShortImageBuffer edges = Thresholder.threshold(
+                    Normalizer.norm(
+                        SobelEdgeDetector.apply(
+                            Normalizer.norm(original)
+                        )
+                    ), EDGE_THRESHOLD
+                );
 
-            ignored.print("edge detector");
+                ignored.print("edge detector");
 
-            HoughFilter houghFilter = new HoughFilter(MIN_RADIUS, MAX_RADIUS, true);
-            ShortImageBuffer houghed = houghFilter.run(edges);
-            HoughFilter.HoughSpace space = houghFilter.getLastHoughSpace();
+                HoughFilter houghFilter = new HoughFilter(MIN_RADIUS, MAX_RADIUS, true);
+                ShortImageBuffer houghed = houghFilter.run(edges);
+                HoughFilter.HoughSpace space = houghFilter.getLastHoughSpace();
 
-            ignored.print("hough filter");
+                ignored.print("hough filter");
 
-            List<Circle> circles = BestPointFinder.find(houghed, space, CENTER_THRESHOLD, Constants.BYTE);
+                List<Circle> circles = BestPointFinder.find(houghed, space, CENTER_THRESHOLD, Constants.BYTE);
 
-            ignored.print("circle collect");
+                ignored.print("circle collect");
 
-            PopUp.Show(CircleAdder.Draw(edges.toImage(), circles), "Detected Circles");
+                PopUp.Show(CircleAdder.Draw(edges.toImage(), circles), "Detected Circles");
 
-            ignored.print("circle draw");
+                ignored.print("circle draw");
 
-            ImageWriter.Save(houghed.toImage(), "samples/out.png", ImageWriter.ImageFormat.PNG);
+                ImageWriter.Save(houghed.toImage(), "samples/out.png", ImageWriter.ImageFormat.PNG);
 
-            ignored.print("save");
+                ignored.print("save");
+            }
         }
         catch (IOException e)
         {
