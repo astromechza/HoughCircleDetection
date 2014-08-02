@@ -1,19 +1,20 @@
-package org.uct.cs.hough.stages;
+package org.uct.cs.hough.processors;
 
+import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Constants;
 
-public class NormalizeStage implements IStage
+public class Normalizer
 {
-    public ShortImageBuffer flow(ShortImageBuffer before)
+    public static ShortImageBuffer norm(ShortImageBuffer input)
     {
-        ShortImageBuffer after = before.copyShape();
+        ShortImageBuffer after = input.copyShape();
         int min = Constants.BYTE;
         int max = 0;
-        for(int y=0;y<before.getHeight();y++)
+        for(int y=0;y<input.getHeight();y++)
         {
-            for(int x=0;x<before.getWidth();x++)
+            for(int x=0;x<input.getWidth();x++)
             {
-                int v = before.get(y, x) & Constants.BYTE;
+                int v = input.get(y, x) & Constants.BYTE;
                 min = (v < min) ? v : min;
                 max = (v > max) ? v : max;
             }
@@ -24,11 +25,11 @@ public class NormalizeStage implements IStage
         {
             float scale = ((float)Constants.BYTE) / diff;
 
-            for (int y = 0; y < before.getHeight(); y++)
+            for (int y = 0; y < input.getHeight(); y++)
             {
-                for (int x = 0; x < before.getWidth(); x++)
+                for (int x = 0; x < input.getWidth(); x++)
                 {
-                    int v = before.get(y, x) & Constants.BYTE;
+                    int v = input.get(y, x) & Constants.BYTE;
                     after.set(y, x, (short)((int)((v - min) * scale) & Constants.BYTE));
                 }
             }

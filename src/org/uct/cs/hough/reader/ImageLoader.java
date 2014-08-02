@@ -1,25 +1,50 @@
 package org.uct.cs.hough.reader;
 
+import org.uct.cs.hough.util.Constants;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
 
 public class ImageLoader
 {
 
-    public static BufferedImage Load(File f) throws IOException
+    public static ShortImageBuffer load(File f) throws IOException
     {
         BufferedImage before = ImageIO.read(f);
 
-        BufferedImage after = new BufferedImage(before.getWidth(), before.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-        after.getGraphics().drawImage(before, 0, 0, null);
-        return after;
+        BufferedImage midway = new BufferedImage(before.getWidth(), before.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        midway.getGraphics().drawImage(before, 0, 0, null);
+
+        int w = midway.getWidth();
+        int h = midway.getHeight();
+        ShortImageBuffer output = new ShortImageBuffer(h, w);
+        byte[] pixels = ((DataBufferByte) midway.getRaster().getDataBuffer()).getData();
+
+        int index = 0;
+        for(int y=0;y<h;y++)
+        {
+            for(int x=0;x<w;x++)
+            {
+                output.set(y, x, (short)(
+                    (
+                        (pixels[index+2] & Constants.BYTE) +
+                        (pixels[index+1] & Constants.BYTE) +
+                        (pixels[index] & Constants.BYTE)
+                    )/3)
+                );
+                index += 3;
+            }
+        }
+
+        return output;
     }
 
-    public static BufferedImage Load(String s) throws IOException
+    public static ShortImageBuffer load(String s) throws IOException
     {
-        return Load(new File(s));
+        return load(new File(s));
     }
 
 

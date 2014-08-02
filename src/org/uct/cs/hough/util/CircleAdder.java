@@ -7,8 +7,9 @@ public class CircleAdder
 {
     public static BufferedImage Draw(BufferedImage before, Iterable<Circle> circles)
     {
-        Graphics g = before.getGraphics();
+        Graphics2D g = (Graphics2D)before.getGraphics();
         g.setColor(Color.red);
+        g.setStroke(new BasicStroke(2));
         for(Circle c : circles)
         {
             g.drawOval(c.x-c.r, c.y-c.r, c.r*2, c.r*2);

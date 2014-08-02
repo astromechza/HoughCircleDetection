@@ -1,4 +1,4 @@
-package org.uct.cs.hough.stages;
+package org.uct.cs.hough.reader;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;

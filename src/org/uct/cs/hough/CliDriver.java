@@ -1,75 +1,60 @@
 package org.uct.cs.hough;
 
 import org.uct.cs.hough.display.PopUp;
+import org.uct.cs.hough.processors.*;
 import org.uct.cs.hough.reader.ImageLoader;
-import org.uct.cs.hough.stages.*;
+import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
 import org.uct.cs.hough.util.CircleAdder;
+import org.uct.cs.hough.util.Constants;
+import org.uct.cs.hough.util.Timer;
 import org.uct.cs.hough.writer.ImageWriter;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 class CliDriver
 {
     private static final int MIN_RADIUS = 10;
     private static final int MAX_RADIUS = 100;
-    private static final int CENTER_THRESHOLD = 180;
+    private static final int CENTER_THRESHOLD = 240;
     private static final int EDGE_THRESHOLD = 220;
 
     public static void main(String[] args)
     {
         try
         {
-            BufferedImage original = ImageLoader.Load("samples/testseq100007.gif");
+            Timer ignored = new Timer("Circle Detector");
+            ShortImageBuffer original = ImageLoader.load("samples/testseq100007.gif");
+            ignored.print("read");
 
-            PopUp.Show(original, "Original");
-
-            // setup pipe stages
-            IStage edgeThresholder = new ThresholdStage(EDGE_THRESHOLD);
-            IStage centerThresholder = new ThresholdStage(CENTER_THRESHOLD);
-            IStage normalizer = new NormalizeStage();
-            IStage sobelEdgeDetector = new SobelEdgeDetectStage();
-
-            ShortImageBuffer edges = edgeThresholder.flow(
-                normalizer.flow(
-                    sobelEdgeDetector.flow(
-                        normalizer.flow(
-                            new GreyscaleSource(GreyscaleSource.Formula.AVERAGE).source(original)
-                        )
+            ShortImageBuffer edges = Thresholder.threshold(
+                Normalizer.norm(
+                    SobelEdgeDetector.apply(
+                        Normalizer.norm(original)
                     )
-                )
+                ), EDGE_THRESHOLD
             );
 
-            PopUp.Show(edges.toImage(), "Edges");
+            ignored.print("edge detector");
 
-            HoughFilterStage houghFilter = new HoughFilterStage(MIN_RADIUS, MAX_RADIUS, true);
-            ShortImageBuffer houghed = houghFilter.flow(edges);
-            HoughFilterStage.HoughSpace space = houghFilter.getLastHoughSpace();
+            HoughFilter houghFilter = new HoughFilter(MIN_RADIUS, MAX_RADIUS, true);
+            ShortImageBuffer houghed = houghFilter.run(edges);
+            HoughFilter.HoughSpace space = houghFilter.getLastHoughSpace();
 
-            ShortImageBuffer circleCenters = centerThresholder.flow(houghed);
+            ignored.print("hough filter");
 
-            List<Circle> circles = new ArrayList<>();
-            for(int y=0;y<circleCenters.getHeight();y++)
-            {
-                for(int x=0;x<circleCenters.getWidth();x++)
-                {
-                    if (circleCenters.get(y,x) > 0)
-                    {
-                        circles.add(new Circle(x,y,space.getMaxRadii(y,x)));
-                    }
-                }
-            }
+            List<Circle> circles = BestPointFinder.find(houghed, space, CENTER_THRESHOLD, Constants.BYTE);
+
+            ignored.print("circle collect");
 
             PopUp.Show(CircleAdder.Draw(edges.toImage(), circles), "Detected Circles");
 
-            PopUp.Show(houghed.toImage(), "Hough Space");
-
-            PopUp.Show(circleCenters.toImage(), "Centers");
+            ignored.print("circle draw");
 
             ImageWriter.Save(houghed.toImage(), "samples/out.png", ImageWriter.ImageFormat.PNG);
+
+            ignored.print("save");
         }
         catch (IOException e)
         {

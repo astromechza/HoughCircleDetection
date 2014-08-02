@@ -1,12 +1,13 @@
-package org.uct.cs.hough.stages;
+package org.uct.cs.hough.processors;
 
+import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Constants;
 import org.uct.cs.hough.util.IntIntPair;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class HoughFilterStage implements IStage
+public class HoughFilter
 {
     private final int minCircleRadius;
     private final int maxCircleRadius;
@@ -18,7 +19,7 @@ public class HoughFilterStage implements IStage
 
     private HoughSpace currentHoughSpace;
 
-    public HoughFilterStage(int minCircleRadius, int maxCircleRadius, boolean normaliseWithRadii)
+    public HoughFilter(int minCircleRadius, int maxCircleRadius, boolean normaliseWithRadii)
     {
         this.minCircleRadius = minCircleRadius;
         this.maxCircleRadius = maxCircleRadius;
@@ -53,8 +54,7 @@ public class HoughFilterStage implements IStage
         }
     }
 
-    @Override
-    public ShortImageBuffer flow(ShortImageBuffer before)
+    public ShortImageBuffer run(ShortImageBuffer before)
     {
         this.currentHoughSpace = new HoughSpace(before.getHeight(), before.getWidth(),this.minCircleRadius, this.maxCircleRadius, this.normaliseWithRadii, this.circumpherenceLengths);
 
