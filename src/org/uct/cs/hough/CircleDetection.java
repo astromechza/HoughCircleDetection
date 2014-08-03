@@ -1,9 +1,9 @@
 package org.uct.cs.hough;
 
+import org.uct.cs.hough.processors.HighPassFilter;
 import org.uct.cs.hough.processors.HoughFilter;
 import org.uct.cs.hough.processors.Normalizer;
 import org.uct.cs.hough.processors.SobelEdgeDetector;
-import org.uct.cs.hough.processors.Thresholder;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
 import org.uct.cs.hough.util.Circumpherence;
@@ -57,7 +57,7 @@ public class CircleDetection
             }
         }
 
-        ShortImageBuffer edges = Thresholder.threshold(
+        ShortImageBuffer edges = HighPassFilter.threshold(
             Normalizer.norm(
                 SobelEdgeDetector.apply(
                     Normalizer.norm(greyscale)

@@ -3,7 +3,7 @@ package org.uct.cs.hough.processors;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Constants;
 
-public class Thresholder
+public class HighPassFilter
 {
     public static ShortImageBuffer threshold(ShortImageBuffer input, int threshold)
     {
