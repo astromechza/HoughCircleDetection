@@ -15,7 +15,6 @@ public class PopUp
     {
         this.frame = new JFrame(title);
         this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.frame.setResizable(false);
         this.frame.setLayout(new BorderLayout());
         this.frame.add(new ImagePanel(image), BorderLayout.CENTER);
         this.frame.pack();

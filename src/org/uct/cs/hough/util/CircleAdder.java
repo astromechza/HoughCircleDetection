@@ -5,15 +5,13 @@ import java.awt.image.BufferedImage;
 
 public class CircleAdder
 {
-    public static BufferedImage Draw(BufferedImage before, Iterable<Circle> circles)
+    public static BufferedImage draw(BufferedImage before, Iterable<Circle> circles)
     {
         Graphics2D g = (Graphics2D)before.getGraphics();
-        g.setColor(Color.blue);
+        g.setColor(Color.yellow);
         for(Circle c : circles)
         {
             int r = c.circumpherence.radius;
-            g.drawString("" + r, c.x-6, c.y+6);
-
             for(IntIntPair p : c.circumpherence.points)
             {
                 int nx = c.x + p.x;
@@ -22,5 +20,12 @@ public class CircleAdder
             }
         }
         return before;
+    }
+
+    public static BufferedImage combine(BufferedImage layer, Iterable<Circle> circles)
+    {
+        BufferedImage bi = new BufferedImage(layer.getWidth(), layer.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        bi.getGraphics().drawImage(layer,0,0, null);
+        return draw(bi, circles);
     }
 }
