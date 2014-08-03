@@ -47,11 +47,11 @@ public class CircleDetection
             for(int x=0;x<w;x++)
             {
                 greyscale.set(y, x, (short)(
-                        (
-                            (pixels[index+2] & Constants.BYTE) +
-                                (pixels[index+1] & Constants.BYTE) +
-                                (pixels[index] & Constants.BYTE)
-                        )/3)
+                    (
+                        (pixels[index+2] & Constants.BYTE) +
+                        (pixels[index+1] & Constants.BYTE) +
+                        (pixels[index] & Constants.BYTE)
+                    )/3)
                 );
                 index += 3;
             }

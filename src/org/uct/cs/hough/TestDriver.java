@@ -37,7 +37,7 @@ public class TestDriver
                 Collection<Circle> circles = CircleDetection.detect(image);
                 timer.print("circle detection");
 
-                PopUp.Show(CircleAdder.combine(image, circles), path);
+                PopUp.show(CircleAdder.combine(image, circles), path);
                 timer.print("popup");
 
                 System.out.printf("Detected: %d circles. %n%n", circles.size());

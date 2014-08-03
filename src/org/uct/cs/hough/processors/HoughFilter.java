@@ -11,7 +11,6 @@ import java.util.List;
 
 public class HoughFilter
 {
-
     public static List<Circle> identify(ShortImageBuffer edges, Collection<Circumpherence> circumpherences, float centerThreshold)
     {
         int height = edges.getHeight();

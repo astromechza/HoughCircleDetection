@@ -4,55 +4,49 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+/** PopUP
+ * A simple class for displaying Buffered Images in a gui format as pop ups.
+ *
+ * Calling PopUp.show(..) will display a small box on screen containing the image. *
+ */
 public class PopUp
 {
-    private static final String DEFAULT_TITLE = "Image";
+    // defaults/constants
     private static final int TITLE_LENGTH = 20;
     private static final int BORDER = 20;
 
-    // components
-    private final JFrame frame;
-
     public PopUp(BufferedImage image, String title)
     {
+        // format title if too long
         if(title.length() > (TITLE_LENGTH+3)) title = "..." + title.substring(title.length()-TITLE_LENGTH);
 
-        this.frame = new JFrame(title);
-        this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        this.frame.setLayout(new BorderLayout());
-        this.frame.setResizable(false);
+        // create frame
+        JFrame frame = new JFrame(title);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setLayout(new BorderLayout());
+        frame.setResizable(false);
 
+        // create centering panel
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
         panel.setBackground(Color.darkGray);
-
         panel.add(new ImagePanel(image), BorderLayout.CENTER);
 
-        this.frame.add(panel);
-        this.frame.pack();
-        this.frame.setLocationRelativeTo(null);
+        // pack and show
+        frame.add(panel);
+        frame.pack();
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
-    public PopUp(BufferedImage image)
+    public static void show(BufferedImage bi, String title)
     {
-        this(image, DEFAULT_TITLE);
+        new PopUp(bi, title);
     }
 
-    public void show()
-    {
-        this.frame.setVisible(true);
-    }
-
-    public static void Show(BufferedImage bi)
-    {
-        new PopUp(bi).show();
-    }
-
-    public static void Show(BufferedImage bi, String title)
-    {
-        new PopUp(bi, title).show();
-    }
-
+    /** ImagePanel
+     * Custom ImagePanel for showing a bufferedImage
+     */
     private class ImagePanel extends JPanel
     {
         private final BufferedImage image;
@@ -63,6 +57,7 @@ public class PopUp
             this.setSize(image.getWidth(), image.getHeight());
         }
 
+        // draw!
         public void paintComponent(Graphics g)
         {
             super.paintComponent(g);

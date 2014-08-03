@@ -32,7 +32,7 @@ class CliDriver
         if (cmd.hasOption("preview"))
         {
             System.out.println("Rendering popup");
-            PopUp.Show(output, path);
+            PopUp.show(output, path);
         }
         if (cmd.hasOption("save"))
         {
