@@ -18,12 +18,14 @@ import java.util.List;
 
 public class CircleDetection
 {
+    private static final int OVERLAP_DISTANCE_SQ = 400;
     private static final int MIN_RADIUS = 10;
     private static final int MAX_RADIUS = 100;
+    private static final float FINAL_SCORE_THRESHOLD = 0.5f;
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 220;
 
-    public static List<Circle> detect(BufferedImage input)
+    public static Collection<Circle> detect(BufferedImage input)
     {
         // make sure the image is in BGR
         if (input.getType() != BufferedImage.TYPE_3BYTE_BGR)
@@ -76,7 +78,7 @@ public class CircleDetection
             float score = getCircleScore(edges, c);
             float score2 = getCircleScore(edges, new Circle(c.x, c.y, Circumpherence.build(c.circumpherence.radius-1)));
             float finalScore = (score + score2) / 2;
-            if (finalScore > 0.5f)
+            if (finalScore > FINAL_SCORE_THRESHOLD)
             {
                 goodCircles.add(
                     new Circle(c.x, c.y, finalScore, c.circumpherence)
@@ -85,7 +87,7 @@ public class CircleDetection
         }
 
         // remove overlaps
-        List<Circle> finalCircles = new ArrayList<>();
+        Collection<Circle> finalCircles = new ArrayList<>();
         for(Circle c1 : goodCircles)
         {
             boolean hasOverlaps = false;
@@ -93,8 +95,8 @@ public class CircleDetection
             {
                 if (c2 != c1)
                 {
-                    double d = Math.sqrt(Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2));
-                    if (d < 20)
+                    double ds = Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2);
+                    if (ds < OVERLAP_DISTANCE_SQ)
                     {
                         if (c2.score > c1.score) hasOverlaps = true;
                     }

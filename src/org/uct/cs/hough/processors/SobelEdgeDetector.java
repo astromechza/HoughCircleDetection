@@ -2,7 +2,6 @@ package org.uct.cs.hough.processors;
 
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Constants;
-import org.uct.cs.hough.util.MathHelper;
 
 public class SobelEdgeDetector
 {
@@ -26,7 +25,8 @@ public class SobelEdgeDetector
                 int Gy = -g00 -2*g10 -g20 +g02 +2*g12 +g22;
 
                 double v = Math.sqrt(Gy*Gy + Gx*Gx)/4;
-                after.set(y, x, (short) MathHelper.clamp((int) v, 0, Constants.BYTE));
+                if (v < Constants.BYTE) v = Constants.BYTE;
+                after.set(y, x, (short) v);
             }
         }
         return after;
