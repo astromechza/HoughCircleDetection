@@ -7,16 +7,28 @@ import java.awt.image.BufferedImage;
 public class PopUp
 {
     private static final String DEFAULT_TITLE = "Image";
+    private static final int TITLE_LENGTH = 20;
+    private static final int BORDER = 20;
 
     // components
     private final JFrame frame;
 
     public PopUp(BufferedImage image, String title)
     {
+        if(title.length() > (TITLE_LENGTH+3)) title = "..." + title.substring(title.length()-TITLE_LENGTH);
+
         this.frame = new JFrame(title);
         this.frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         this.frame.setLayout(new BorderLayout());
-        this.frame.add(new ImagePanel(image), BorderLayout.CENTER);
+        this.frame.setResizable(false);
+
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
+        panel.setBackground(Color.darkGray);
+
+        panel.add(new ImagePanel(image), BorderLayout.CENTER);
+
+        this.frame.add(panel);
         this.frame.pack();
         this.frame.setLocationRelativeTo(null);
     }

@@ -20,6 +20,10 @@ public class CircleAdder
                 int ny = c.y + p.y;
                 g.drawLine(nx,ny,nx,ny);
             }
+
+            g.drawLine(c.x-2, c.y, c.x+2, c.y);
+            g.drawLine(c.x, c.y-2, c.x, c.y+2);
+
         }
 
         return image;
