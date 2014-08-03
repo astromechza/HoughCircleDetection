@@ -25,7 +25,7 @@ public class SobelEdgeDetector
                 int Gy = -g00 -2*g10 -g20 +g02 +2*g12 +g22;
 
                 double v = Math.sqrt(Gy*Gy + Gx*Gx)/4;
-                if (v < Constants.BYTE) v = Constants.BYTE;
+                if (v > Constants.BYTE) v = Constants.BYTE;
                 after.set(y, x, (short) v);
             }
         }
