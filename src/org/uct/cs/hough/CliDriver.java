@@ -4,63 +4,126 @@ import org.uct.cs.hough.display.PopUp;
 import org.uct.cs.hough.processors.*;
 import org.uct.cs.hough.reader.ImageLoader;
 import org.uct.cs.hough.reader.ShortImageBuffer;
-import org.uct.cs.hough.util.Circle;
-import org.uct.cs.hough.util.CircleAdder;
-import org.uct.cs.hough.util.Constants;
-import org.uct.cs.hough.util.Timer;
+import org.uct.cs.hough.util.*;
 import org.uct.cs.hough.writer.ImageWriter;
 
+import javax.sound.midi.SysexMessage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class CliDriver
 {
     private static final int MIN_RADIUS = 10;
     private static final int MAX_RADIUS = 100;
-    private static final int CENTER_THRESHOLD = 240;
+    private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 220;
 
     public static void main(String[] args)
     {
+        String[] images = new String[]{
+            "samples/testseq100000.gif",
+            "samples/testseq100007.gif",
+            "samples/testseq100136.gif",
+            "samples/testseq100192.gif",
+        };
+
         try
         {
-            try(Timer ignored = new Timer("total"))
+
+            for (String image : images)
             {
-                ShortImageBuffer original = ImageLoader.load("samples/testseq100007.gif");
-                ignored.print("read");
+                // start the timer so we can print sub times
+                try (Timer timer = new Timer("total"))
+                {
+                    // load the image in greyscale form
+                    ShortImageBuffer original = ImageLoader.load(image);
+                    timer.print("read");
 
-                ShortImageBuffer edges = Thresholder.threshold(
-                    Normalizer.norm(
-                        SobelEdgeDetector.apply(
-                            Normalizer.norm(original)
-                        )
-                    ), EDGE_THRESHOLD
-                );
+                    // perform edge detect
+                    ShortImageBuffer edges = Thresholder.threshold(
+                        Normalizer.norm(
+                            SobelEdgeDetector.apply(
+                                Normalizer.norm(original)
+                            )
+                        ), EDGE_THRESHOLD
+                    );
+                    timer.print("edge detector");
 
-                ignored.print("edge detector");
+                    // build a list of the shapes to test for, in this case, circles.
+                    List<Circumpherence> circumpherences = new ArrayList<>();
+                    for (int r = MIN_RADIUS; r < MAX_RADIUS; r++) circumpherences.add(Circumpherence.build(r));
 
-                HoughFilter houghFilter = new HoughFilter(MIN_RADIUS, MAX_RADIUS, true);
-                ShortImageBuffer houghed = houghFilter.run(edges);
-                HoughFilter.HoughSpace space = houghFilter.getLastHoughSpace();
+                    // setup hough filter
+                    List<Circle> candidateCircles = HoughFilter.identify(edges, circumpherences, CENTER_THRESHOLD);
 
-                ignored.print("hough filter");
+                    // double check
+                    List<Circle> goodCircles = new ArrayList<>();
+                    for (Circle c : candidateCircles)
+                    {
+                        float score = getCircleScore(edges, c);
+                        float score2 = getCircleScore(edges, new Circle(c.x, c.y, Circumpherence.build(c.circumpherence.radius-1)));
+                        float finalScore = (score + score2) / 2;
+                        if (finalScore > 0.5f)
+                        {
+                            goodCircles.add(
+                                new Circle(c.x, c.y, finalScore, c.circumpherence)
+                            );
+                        }
+                    }
 
-                List<Circle> circles = BestPointFinder.find(houghed, space, CENTER_THRESHOLD, Constants.BYTE);
+                    // remove overlaps
+                    List<Circle> finalCircles = new ArrayList<>();
+                    for(Circle c1 : goodCircles)
+                    {
+                        boolean hasOverlaps = false;
+                        for(Circle c2 : goodCircles)
+                        {
+                            if (c2 != c1)
+                            {
+                                double d = Math.sqrt(Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2));
+                                if (d < 20)
+                                {
+                                    if (c2.score > c1.score) hasOverlaps = true;
+                                }
+                            }
+                        }
+                        if (!hasOverlaps)finalCircles.add(c1);
+                    }
 
-                ignored.print("circle collect");
+                    timer.print("circle detect");
 
-                PopUp.Show(CircleAdder.Draw(edges.toImage(), circles), "Detected Circles");
+                    PopUp.Show(CircleAdder.Draw(edges.toImage(), finalCircles), "Detected Circles");
 
-                ignored.print("circle draw");
-
-                ImageWriter.Save(houghed.toImage(), "samples/out.png", ImageWriter.ImageFormat.PNG);
-
-                ignored.print("save");
+                    timer.print("save");
+                }
             }
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
+    }
+
+    private static float getCircleScore(ShortImageBuffer edges, Circle circle)
+    {
+        int total = 0;
+        int pcount = 0;
+        for (IntIntPair p : circle.circumpherence.points)
+        {
+            int nx = circle.x + p.x;
+            int ny = circle.y + p.y;
+
+            if (nx >= 0 && nx < edges.getWidth() && ny >= 0 && ny < edges.getHeight())
+            {
+                pcount++;
+                if (edges.get(ny, nx) != 0) total++;
+            }
+        }
+        return ((float) total) / pcount;
     }
 }
