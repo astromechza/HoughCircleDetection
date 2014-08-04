@@ -43,4 +43,4 @@ compilejar:
 	jar cvfe CircleDetection.jar org.uct.cs.hough.CliDriver -C $(OUTDIR) .
 
 clean:
-	rm -rf out
+	rm -rf $(OUTDIR)
