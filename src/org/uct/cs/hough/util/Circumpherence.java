@@ -1,10 +1,9 @@
 package org.uct.cs.hough.util;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-public class Circumpherence implements Iterable<IntIntPair>
+public class Circumpherence
 {
     public final List<IntIntPair> points = new ArrayList<>();
     public final int radius;
@@ -50,27 +49,5 @@ public class Circumpherence implements Iterable<IntIntPair>
     public int getNumPoints()
     {
         return this.points.size();
-    }
-
-
-    @Override
-    public Iterator<IntIntPair> iterator()
-    {
-        return new Iterator<IntIntPair>()
-        {
-            private int index = 0;
-
-            @Override
-            public boolean hasNext()
-            {
-                return index < getNumPoints();
-            }
-
-            @Override
-            public IntIntPair next()
-            {
-                return points.get(index++);
-            }
-        };
     }
 }
