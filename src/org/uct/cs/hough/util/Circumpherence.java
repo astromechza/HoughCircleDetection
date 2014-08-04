@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Circumpherence
 {
-    public final List<IntIntPair> points = new ArrayList<>();
+    public final List<IntIntPair> points = new ArrayList<IntIntPair>();
     public final int radius;
 
     public Circumpherence(int r)
