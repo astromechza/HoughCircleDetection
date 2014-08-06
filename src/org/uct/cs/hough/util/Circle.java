@@ -38,6 +38,15 @@ public class Circle implements Comparable<Circle>
 
     public Circle score(ShortImageBuffer edges)
     {
+        if(this.x <= this.radius ||
+            this.y <= this.radius ||
+            this.x >= (edges.getWidth() - this.radius) ||
+            this.y >= (edges.getHeight() - this.radius)) return this.scoreCheck(edges);
+        return this.scoreNoCheck(edges);
+    }
+
+    public Circle scoreCheck(ShortImageBuffer edges)
+    {
         float total = 0;
         int pcount = 0;
         for(int[] p : CircumferenceProvider.get(this.radius))
@@ -52,5 +61,16 @@ public class Circle implements Comparable<Circle>
             }
         }
         return new Circle(this.x, this.y, total / pcount, this.radius);
+    }
+
+    public Circle scoreNoCheck(ShortImageBuffer edges)
+    {
+        float total = 0;
+        int[][] pointlist = CircumferenceProvider.get(this.radius);
+        for(int[] p : pointlist)
+        {
+            if (edges.get(this.y + p[1], this.x + p[0]) != 0) total+=1;
+        }
+        return new Circle(this.x, this.y, total / pointlist.length, this.radius);
     }
 }
