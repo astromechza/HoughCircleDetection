@@ -13,7 +13,7 @@ public class PopUp
 {
     // defaults/constants
     private static final int TITLE_LENGTH = 20;
-    private static final int BORDER = 50;
+    private static final int BORDER = 20;
 
     public PopUp(BufferedImage image, String title)
     {

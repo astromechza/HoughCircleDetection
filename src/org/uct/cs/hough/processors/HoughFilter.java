@@ -17,7 +17,7 @@ public class HoughFilter
         int heightWithBorder = height + 2*border;
         int width = edges.getWidth();
         int widthWithBorder = width + 2*border;
-        int depth = CircumferenceProvider.getPointlists().size();
+        int depth = CircleDetection.MAX_RADIUS - CircleDetection.MIN_RADIUS;
 
         // create hough space
         int[] space = new int[heightWithBorder*widthWithBorder*depth];

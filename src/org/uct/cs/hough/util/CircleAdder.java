@@ -15,16 +15,27 @@ public class CircleAdder
         for(Circle c : circles)
         {
             g.setColor(Color.blue);
-            for(int[] p : CircumferenceProvider.get(c.radius))
+            int x = c.radius, y = 0;
+            int radiusError = 1-x;
+            while(x >= y)
             {
-                int nx = c.x + p[0];
-                int ny = c.y + p[1];
-                g.drawLine(nx,ny,nx,ny);
+                g.drawLine(c.x+x, c.y+y, c.x+x, c.y+y);
+                g.drawLine(c.x+y, c.y+x, c.x+y, c.y+x);
+                g.drawLine(c.x-x, c.y+y, c.x-x, c.y+y);
+                g.drawLine(c.x-y, c.y+x, c.x-y, c.y+x);
+                g.drawLine(c.x-x, c.y-y, c.x-x, c.y-y);
+                g.drawLine(c.x-y, c.y-x, c.x-y, c.y-x);
+                g.drawLine(c.x+x, c.y-y, c.x+x, c.y-y);
+                g.drawLine(c.x+y, c.y-x, c.x+y, c.y-x);
+                y++;
+                if (radiusError >= 0) radiusError -= 2 * (x--);
+                radiusError += 2 * y + 1;
             }
+
             g.drawLine(c.x-2, c.y-2, c.x+2, c.y+2);
             g.drawLine(c.x-2, c.y+2, c.x+2, c.y-2);
             g.setColor(Color.yellow);
-            g.drawString(String.format("%.3f  %d", c.score, c.radius), c.x-12, c.y+12);
+            g.drawString(String.format("%.3f", c.score), c.x-12, c.y+12);
         }
 
         return image;
