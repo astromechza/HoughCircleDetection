@@ -43,7 +43,7 @@ class CliDriver
 
         System.out.printf("Detected: %d circles: %n", circles.size());
         System.out.printf("%-10s | %-10s | %-10s%n", "X", "Y", "radius");
-        for(Circle c : circles) System.out.printf("%10s | %10s | %10s%n", c.x, c.y, c.circumference.radius);
+        for(Circle c : circles) System.out.printf("%10s | %10s | %10s%n", c.x, c.y, c.radius);
 
     }
 

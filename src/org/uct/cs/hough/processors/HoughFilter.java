@@ -2,20 +2,18 @@ package org.uct.cs.hough.processors;
 
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
-import org.uct.cs.hough.util.Circumference;
-import org.uct.cs.hough.util.IntIntPair;
+import org.uct.cs.hough.util.CircumferenceProvider;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class HoughFilter
 {
-    public static List<Circle> identify(ShortImageBuffer edges, Collection<Circumference> circumferences, float centerThreshold)
+    public static List<Circle> identify(ShortImageBuffer edges, float centerThreshold)
     {
         int height = edges.getHeight();
         int width = edges.getWidth();
-        int depth = circumferences.size();
+        int depth = CircumferenceProvider.getPointlists().size();
 
         // create hough space
         int[][][] space = new int[height][width][depth];
@@ -26,16 +24,16 @@ public class HoughFilter
             {
                 if (edges.get(y,x) != 0)
                 {
-                    int i = 0;
-                    for (Circumference c : circumferences)
+                    int r = 0;
+                    for(int[][] pointlist : CircumferenceProvider.getPointlists())
                     {
-                        for (IntIntPair p : c.points)
+                        for(int[] p : pointlist)
                         {
-                            int nx = x + p.x;
-                            int ny = y + p.y;
-                            if (nx >= 0 && nx < width && ny >= 0 && ny < height ) space[ny][nx][i]++;
+                            int nx = x + p[0];
+                            int ny = y + p[1];
+                            if (nx >= 0 && nx < width && ny >= 0 && ny < height ) space[ny][nx][r]++;
                         }
-                        i++;
+                        r++;
                     }
                 }
             }
@@ -47,12 +45,12 @@ public class HoughFilter
             for(int x=0;x<width;x++)
             {
                 int r = 0;
-                for (Circumference c : circumferences)
+                for (int[][] pointlist : CircumferenceProvider.getPointlists())
                 {
-                    float score = ((float)(space[y][x][r])) / c.getNumPoints();
+                    float score = ((float)(space[y][x][r])) / pointlist.length;
                     if (score > centerThreshold)
                     {
-                        output.add(new Circle(x,y,c));
+                        output.add(new Circle(x,y,CircumferenceProvider.getMinRadius() + r));
                     }
                     r++;
                 }

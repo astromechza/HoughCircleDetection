@@ -3,19 +3,19 @@ package org.uct.cs.hough.util;
 public class Circle
 {
     public final int x,y;
-    public final Circumference circumference;
+    public final int radius;
     public final float score;
 
-    public Circle(int x, int y, float s, Circumference c)
+    public Circle(int x, int y, float s, int r)
     {
         this.x = x;
         this.y = y;
         this.score = s;
-        this.circumference = c;
+        this.radius = r;
     }
 
-    public Circle(int x, int y, Circumference c)
+    public Circle(int x, int y, int r)
     {
-        this(x,y,0,c);
+        this(x,y,0,r);
     }
 }

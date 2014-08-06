@@ -14,16 +14,15 @@ public class CircleAdder
         g.setColor(Color.yellow);
         for(Circle c : circles)
         {
-            for(IntIntPair p : c.circumference.points)
+            for(int[] p : CircumferenceProvider.get(c.radius))
             {
-                int nx = c.x + p.x;
-                int ny = c.y + p.y;
+                int nx = c.x + p[0];
+                int ny = c.y + p[1];
                 g.drawLine(nx,ny,nx,ny);
             }
 
             g.drawLine(c.x-2, c.y, c.x+2, c.y);
             g.drawLine(c.x, c.y-2, c.x, c.y+2);
-
         }
 
         return image;

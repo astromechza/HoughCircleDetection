@@ -6,9 +6,8 @@ import org.uct.cs.hough.processors.Normalizer;
 import org.uct.cs.hough.processors.SobelEdgeDetector;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
-import org.uct.cs.hough.util.Circumference;
+import org.uct.cs.hough.util.CircumferenceProvider;
 import org.uct.cs.hough.util.Constants;
-import org.uct.cs.hough.util.IntIntPair;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -27,6 +26,8 @@ public class CircleDetection
 
     public static Collection<Circle> detect(BufferedImage input)
     {
+        CircumferenceProvider.initialise(MIN_RADIUS, MAX_RADIUS);
+
         // make sure the image is in BGR
         if (input.getType() != BufferedImage.TYPE_3BYTE_BGR)
         {
@@ -65,23 +66,21 @@ public class CircleDetection
             ), EDGE_THRESHOLD
         );
 
-        Collection<Circumference> circumferences = new ArrayList<>();
-        for (int r = MIN_RADIUS; r < MAX_RADIUS; r++) circumferences.add(Circumference.build(r));
 
         // setup hough filter
-        List<Circle> candidateCircles = HoughFilter.identify(edges, circumferences, CENTER_THRESHOLD);
+        List<Circle> candidateCircles = HoughFilter.identify(edges, CENTER_THRESHOLD);
 
         // double check
         Collection<Circle> goodCircles = new ArrayList<>();
         for (Circle c : candidateCircles)
         {
             float score = getCircleScore(edges, c);
-            float score2 = getCircleScore(edges, new Circle(c.x, c.y, Circumference.build(c.circumference.radius - 1)));
+            float score2 = getCircleScore(edges, new Circle(c.x, c.y, c.radius-1));
             float finalScore = (score + score2) / 2;
             if (finalScore > FINAL_SCORE_THRESHOLD)
             {
                 goodCircles.add(
-                    new Circle(c.x, c.y, finalScore, c.circumference)
+                    new Circle(c.x, c.y, finalScore, c.radius)
                 );
             }
         }
@@ -112,10 +111,10 @@ public class CircleDetection
     {
         int total = 0;
         int pcount = 0;
-        for (IntIntPair p : circle.circumference.points)
+        for(int[] p : CircumferenceProvider.get(circle.radius))
         {
-            int nx = circle.x + p.x;
-            int ny = circle.y + p.y;
+            int nx = circle.x + p[0];
+            int ny = circle.y + p[1];
 
             if (nx >= 0 && nx < edges.getWidth() && ny >= 0 && ny < edges.getHeight())
             {
