@@ -24,10 +24,10 @@ public class HoughFilter
         int nx,ny,ay,ax,cx,cy,radiusError;
         for(int y=0;y<height;y++)
         {
-            ay = y + CircleDetection.MAX_RADIUS;
+            ay = y + border;
             for(int x=0;x<width;x++)
             {
-                ax = x + CircleDetection.MAX_RADIUS;
+                ax = x + border;
                 if (edges.get(y,x) != 0)
                 {
                     for(int r=0;r<depth;r++)
@@ -85,10 +85,10 @@ public class HoughFilter
         List<Circle> output = new ArrayList<>();
         for(int y=0;y<height;y++)
         {
-            ay = y + CircleDetection.MAX_RADIUS;
+            ay = y + border;
             for(int x=0;x<width;x++)
             {
-                ax = x + CircleDetection.MAX_RADIUS;
+                ax = x + border;
                 for(int r=0;r<depth;r++)
                 {
                     if ((space[ay][ax][r] / cl[r]) > centerThreshold)
