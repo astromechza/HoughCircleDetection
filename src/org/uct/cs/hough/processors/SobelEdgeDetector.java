@@ -20,11 +20,11 @@ public class SobelEdgeDetector
                 int g21 = input.get(y+1, x) & 0xFF;
                 int g22 = input.get(y+1, x+1) & 0xFF;
 
-                int Gx = -g00 -2*g01 -g02 +g20 +2*g21 +g22;
-                int Gy = -g00 -2*g10 -g20 +g02 +2*g12 +g22;
+                int Gx = - g00 - 2*g01 - g02 + g20 + 2*g21 + g22;
+                int Gy = - g00 - 2*g10 - g20 + g02 + 2*g12 + g22;
 
-                double v = Math.sqrt(Gy*Gy + Gx*Gx)/4;
-                if (v > 0xFF) v = 0xFF;
+                double v = Math.sqrt(Gy*Gy + Gx*Gx);
+                if (v > 0xFFFF) v = 0xFFFF;
                 after.set(y, x, (short) v);
             }
         }

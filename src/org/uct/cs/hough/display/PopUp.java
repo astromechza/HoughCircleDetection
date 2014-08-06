@@ -13,7 +13,7 @@ public class PopUp
 {
     // defaults/constants
     private static final int TITLE_LENGTH = 20;
-    private static final int BORDER = 20;
+    private static final int BORDER = 50;
 
     public PopUp(BufferedImage image, String title)
     {
@@ -31,11 +31,13 @@ public class PopUp
         panel.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
         panel.setBackground(Color.darkGray);
         panel.add(new ImagePanel(image), BorderLayout.CENTER);
+        panel.setSize(image.getWidth(), image.getHeight());
 
         // pack and show
         frame.add(panel);
         frame.pack();
         frame.setLocationRelativeTo(null);
+        frame.pack();
         frame.setVisible(true);
     }
 

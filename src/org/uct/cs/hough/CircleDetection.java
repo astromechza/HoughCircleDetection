@@ -1,17 +1,20 @@
 package org.uct.cs.hough;
 
+import org.uct.cs.hough.display.PopUp;
 import org.uct.cs.hough.processors.HighPassFilter;
 import org.uct.cs.hough.processors.HoughFilter;
 import org.uct.cs.hough.processors.Normalizer;
 import org.uct.cs.hough.processors.SobelEdgeDetector;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
+import org.uct.cs.hough.util.CircleAdder;
 import org.uct.cs.hough.util.CircumferenceProvider;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class CircleDetection
@@ -19,9 +22,9 @@ public class CircleDetection
     private static final int OVERLAP_DISTANCE_SQ = 400;
     public static final int MIN_RADIUS = 10;
     public static final int MAX_RADIUS = 100;
-    private static final float FINAL_SCORE_THRESHOLD = 0.6f;
+    private static final float FINAL_SCORE_THRESHOLD = 0.75f;
     private static final float CENTER_THRESHOLD = 0.4f;
-    private static final int EDGE_THRESHOLD = 220;
+    private static final int EDGE_THRESHOLD = 210;
 
     public static Collection<Circle> detect(BufferedImage input)
     {
@@ -30,12 +33,33 @@ public class CircleDetection
         // make sure the image is in BGR
         if (input.getType() != BufferedImage.TYPE_3BYTE_BGR)
         {
-            BufferedImage midway = new BufferedImage(input.getWidth(), input.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+            int h = input.getHeight();
+            int w = input.getWidth();
+            BufferedImage midway = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
             midway.getGraphics().drawImage(input, 0, 0, null);
             input = midway;
         }
 
         // convert to greyscale
+        ShortImageBuffer greyscale = fromBufferedImage(input);
+
+        ShortImageBuffer edges = HighPassFilter.threshold(
+            Normalizer.norm(
+                SobelEdgeDetector.apply(
+                    Normalizer.norm(greyscale)
+                )
+            ), EDGE_THRESHOLD
+        );
+
+        Collection<Circle> circles = HoughFilter.identify(edges, CENTER_THRESHOLD);
+        circles = filterOverlaps(circles);
+        circles = filterFinalScoreCheck(edges, circles);
+
+        return circles;
+    }
+
+    private static ShortImageBuffer fromBufferedImage(BufferedImage input)
+    {
         int w = input.getWidth();
         int h = input.getHeight();
         ShortImageBuffer greyscale = new ShortImageBuffer(h, w);
@@ -47,82 +71,68 @@ public class CircleDetection
             for(int x=0;x<w;x++)
             {
                 greyscale.set(y, x, (short)(
-                    (
-                        (pixels[index+2] & 0xFF) +
-                        (pixels[index+1] & 0xFF) +
-                        (pixels[index] & 0xFF)
-                    )/3)
+                        (
+                            (pixels[index+2] & 0xFF) +
+                                (pixels[index+1] & 0xFF) +
+                                (pixels[index] & 0xFF)
+                        )/3)
                 );
                 index += 3;
             }
         }
+        return greyscale;
+    }
 
-        ShortImageBuffer edges = HighPassFilter.threshold(
-            Normalizer.norm(
-                SobelEdgeDetector.apply(
-                    Normalizer.norm(greyscale)
-                )
-            ), EDGE_THRESHOLD
-        );
+    private static Collection<Circle> filterOverlaps(Collection<Circle> input)
+    {
+        Collection<Circle> output = new ArrayList<>();
 
-        // setup hough filter
-        List<Circle> candidateCircles = HoughFilter.identify(edges, CENTER_THRESHOLD);
-
-        // double check
-        Collection<Circle> goodCircles = new ArrayList<>();
-        for (Circle c : candidateCircles)
+        // for each circle
+        for(Circle c1 : input)
         {
-            float score = getCircleScore(edges, c);
-            if (c.radius % 2 == 1)
-            {
-                float score2 = getCircleScore(edges, new Circle(c.x, c.y, c.radius-1));
-                score = Math.max(score, score2);
-            }
-            if (score > FINAL_SCORE_THRESHOLD)
-            {
-                goodCircles.add(
-                    new Circle(c.x, c.y, score, c.radius)
-                );
-            }
-        }
-
-        // remove overlaps
-        Collection<Circle> finalCircles = new ArrayList<>();
-        for(Circle c1 : goodCircles)
-        {
+            // at first it doesn't have overlaps
             boolean hasOverlaps = false;
-            for(Circle c2 : goodCircles)
+
+            // loop through all the circles
+            for(Circle c2 : input)
             {
+                // can't compare to itself
                 if (c2 != c1)
                 {
-                    double ds = Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2);
-                    if (ds < OVERLAP_DISTANCE_SQ)
+                    // if the square distance is smaller than the min overlap distance
+                    if ((Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2)) < OVERLAP_DISTANCE_SQ)
                     {
                         if (c2.score > c1.score) hasOverlaps = true;
+                        else if(c2.score == c1.score && c2.hashCode() > c1.hashCode()) hasOverlaps = true;
                     }
                 }
             }
-            if (!hasOverlaps) finalCircles.add(c1);
+            if (!hasOverlaps) output.add(c1);
         }
-
-        return finalCircles;
+        return output;
     }
 
-    private static float getCircleScore(ShortImageBuffer edges, Circle circle)
+    private static Collection<Circle> filterFinalScoreCheck(ShortImageBuffer edgeImage, Collection<Circle> input)
     {
-        float total = 0;
-        int pcount = 0;
-        for(int[] p : CircumferenceProvider.get(circle.radius))
+        Collection<Circle> output = new ArrayList<>();
+        for (Circle original : input)
         {
-            int nx = circle.x + p[0];
-            int ny = circle.y + p[1];
-
-            if (nx >= 0 && nx < edges.getWidth() && ny >= 0 && ny < edges.getHeight())
+            List<Circle> permutations = new ArrayList<>();
+            for(int i=0;i<3*3*3;i++)
             {
-                pcount++;
-                if (edges.get(ny, nx) != 0) total+=1;
+                int dr = (i%3)-1;
+                int dx = ((i/9)%3)-1;
+                int dy = ((i/3)%3)-1;
+                permutations.add(original.shift(dx, dy).grow(dr).score(edgeImage));
+            }
+
+            Circle best = Collections.max(permutations);
+
+            if (best.score >= FINAL_SCORE_THRESHOLD)
+            {
+                output.add(best);
             }
         }
-        return total / pcount;
+        return output;
     }
 }

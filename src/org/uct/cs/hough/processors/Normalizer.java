@@ -12,13 +12,13 @@ public class Normalizer
         ShortImageBuffer after = input.copyShape();
 
         // calculate min and max
-        int min = 0xFF;
+        int min = 0xFFFF;
         int max = 0;
         for(int y=0;y<input.getHeight();y++)
         {
             for(int x=0;x<input.getWidth();x++)
             {
-                int v = input.get(y, x) & 0xFF;
+                int v = input.get(y, x) & 0xFFFF;
                 min = (v < min) ? v : min;
                 max = (v > max) ? v : max;
             }
@@ -34,7 +34,7 @@ public class Normalizer
             {
                 for (int x = 0; x < input.getWidth(); x++)
                 {
-                    int v = input.get(y, x) & 0xFF;
+                    int v = input.get(y, x) & 0xFFFF;
                     after.set(y, x, (short)((int)((v - min) * scale) & 0xFF));
                 }
             }

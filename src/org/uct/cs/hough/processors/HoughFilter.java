@@ -89,9 +89,10 @@ public class HoughFilter
                 ax = (x + border) * depth;
                 for(int r=0;r<depth;r++)
                 {
-                    if (space[ay + ax + r] > cl[r])
+                    float score = space[ay + ax + r];
+                    if (score > cl[r])
                     {
-                        output.add(new Circle(x,y,CircleDetection.MIN_RADIUS + r));
+                        output.add(new Circle(x, y, score / (cl[r] / centerThreshold),CircleDetection.MIN_RADIUS + r));
                     }
                 }
             }
