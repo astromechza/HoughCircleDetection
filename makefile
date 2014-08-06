@@ -4,7 +4,7 @@
 
 JFLAGS = -g
 JC = javac
-OUTDIR = out
+OUTDIR = bin
 .SUFFIXES: .java .class
 .java.class:
 	$(JC) -sourcepath src -classpath $(OUTDIR) -d $(OUTDIR) $(JFLAGS) $*.java
