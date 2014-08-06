@@ -27,9 +27,9 @@ public class HoughFilter
             ay = y + border;
             for(int x=0;x<width;x++)
             {
-                ax = x + border;
                 if (edges.get(y,x) != 0)
                 {
+                    ax = x + border;
                     for(int r=0;r<depth;r++)
                     {
                         cx = CircleDetection.MIN_RADIUS + r;
@@ -40,26 +40,21 @@ public class HoughFilter
                             nx = ax + cx;
                             ny = ay + cy;
                             space[(ny*widthWithBorder + nx)*depth + r]++;
-                            nx = ax + cy;
-                            ny = ay + cx;
-                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax - cx;
-                            ny = ay + cy;
                             space[(ny*widthWithBorder + nx)*depth + r]++;
-                            nx = ax - cy;
-                            ny = ay + cx;
-                            space[(ny*widthWithBorder + nx)*depth + r]++;
-                            nx = ax - cx;
                             ny = ay - cy;
-                            space[(ny*widthWithBorder + nx)*depth + r]++;
-                            nx = ax - cy;
-                            ny = ay - cx;
                             space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax + cx;
-                            ny = ay - cy;
                             space[(ny*widthWithBorder + nx)*depth + r]++;
+
                             nx = ax + cy;
+                            ny = ay + cx;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             ny = ay - cx;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
+                            nx = ax - cy;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
+                            ny = ay + cx;
                             space[(ny*widthWithBorder + nx)*depth + r]++;
 
                             cy++;
