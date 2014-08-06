@@ -8,23 +8,23 @@ public class ShortImageBuffer
 {
     private final int width;
     private final int height;
-    private final short[][] data;
+    private final short[] data;
 
     public ShortImageBuffer(int height, int width)
     {
         this.width = width;
         this.height = height;
-        this.data = new short[height][width];
+        this.data = new short[height*width];
     }
 
     public short get(int y, int x)
     {
-        return this.data[y][x];
+        return this.data[y*width + x];
     }
 
     public void set(int y, int x, short s)
     {
-        this.data[y][x] = s;
+        this.data[y*width + x] = s;
     }
 
     public int getWidth()
