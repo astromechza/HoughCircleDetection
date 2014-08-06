@@ -74,12 +74,15 @@ public class CircleDetection
         for (Circle c : candidateCircles)
         {
             float score = getCircleScore(edges, c);
-            float score2 = getCircleScore(edges, new Circle(c.x, c.y, c.radius-1));
-            float finalScore = (score + score2) / 2;
-            if (finalScore > FINAL_SCORE_THRESHOLD)
+            if (c.radius % 2 == 1)
+            {
+                float score2 = getCircleScore(edges, new Circle(c.x, c.y, c.radius-1));
+                score = (score + score2) / 2;
+            }
+            if (score > FINAL_SCORE_THRESHOLD)
             {
                 goodCircles.add(
-                    new Circle(c.x, c.y, finalScore, c.radius)
+                    new Circle(c.x, c.y, score, c.radius)
                 );
             }
         }
