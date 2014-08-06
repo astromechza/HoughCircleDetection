@@ -75,21 +75,21 @@ public class HoughFilter
             }
         }
 
-        // cache circumference lenths
+        // cache circumference lengths
         float[] cl = new float[depth];
-        for(int r=0;r<depth;r++) cl[r] = CircumferenceProvider.get(CircleDetection.MIN_RADIUS + r).length;
+        for(int r=0;r<depth;r++) cl[r] = CircumferenceProvider.get(CircleDetection.MIN_RADIUS + r).length * centerThreshold;
 
         List<Circle> output = new ArrayList<>();
-
+           
         for(int y=0;y<height;y++)
         {
-            ay = y + border;
+            ay = (y + border) * memBOffset;
             for(int x=0;x<width;x++)
             {
-                ax = x + border;
+                ax = (x + border) * depth;
                 for(int r=0;r<depth;r++)
                 {
-                    if ((space[(ay*widthWithBorder + ax) *depth + r] / cl[r]) > centerThreshold)
+                    if (space[ay + ax + r] > cl[r])
                     {
                         output.add(new Circle(x,y,CircleDetection.MIN_RADIUS + r));
                     }
