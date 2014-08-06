@@ -80,7 +80,7 @@ public class CircleDetection
 
     private static Collection<Circle> filterOverlaps(Collection<Circle> input)
     {
-        Collection<Circle> output = new ArrayList<>();
+        Collection<Circle> output = new ArrayList<>(input.size());
 
         // for each circle
         for(Circle c1 : input)
@@ -109,10 +109,10 @@ public class CircleDetection
 
     private static Collection<Circle> filterFinalScoreCheck(ShortImageBuffer edgeImage, Collection<Circle> input)
     {
-        Collection<Circle> output = new ArrayList<>();
+        Collection<Circle> output = new ArrayList<>(input.size());
         for (Circle original : input)
         {
-            List<Circle> permutations = new ArrayList<>();
+            List<Circle> permutations = new ArrayList<>(input.size());
             for(int i=0;i<3*3*3;i++)
             {
                 int dr = (i%3)-1;

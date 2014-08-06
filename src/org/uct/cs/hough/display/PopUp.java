@@ -49,7 +49,7 @@ public class PopUp
     /** ImagePanel
      * Custom ImagePanel for showing a bufferedImage
      */
-    private class ImagePanel extends JPanel
+    private static class ImagePanel extends JPanel
     {
         private final BufferedImage image;
 
