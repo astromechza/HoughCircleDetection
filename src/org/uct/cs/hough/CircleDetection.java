@@ -19,7 +19,7 @@ public class CircleDetection
     private static final int OVERLAP_DISTANCE_SQ = 400;
     public static final int MIN_RADIUS = 10;
     public static final int MAX_RADIUS = 100;
-    private static final float FINAL_SCORE_THRESHOLD = 0.5f;
+    private static final float FINAL_SCORE_THRESHOLD = 0.6f;
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 220;
 
@@ -65,7 +65,6 @@ public class CircleDetection
             ), EDGE_THRESHOLD
         );
 
-
         // setup hough filter
         List<Circle> candidateCircles = HoughFilter.identify(edges, CENTER_THRESHOLD);
 
@@ -77,7 +76,7 @@ public class CircleDetection
             if (c.radius % 2 == 1)
             {
                 float score2 = getCircleScore(edges, new Circle(c.x, c.y, c.radius-1));
-                score = (score + score2) / 2;
+                score = Math.max(score, score2);
             }
             if (score > FINAL_SCORE_THRESHOLD)
             {
@@ -103,7 +102,7 @@ public class CircleDetection
                     }
                 }
             }
-            if (!hasOverlaps)finalCircles.add(c1);
+            if (!hasOverlaps) finalCircles.add(c1);
         }
 
         return finalCircles;

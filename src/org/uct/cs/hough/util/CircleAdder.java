@@ -11,18 +11,20 @@ public class CircleAdder
         Graphics2D g = (Graphics2D)image.getGraphics();
 
         g.drawImage(layer, 0, 0, null);
-        g.setColor(Color.yellow);
+        g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 8));
         for(Circle c : circles)
         {
+            g.setColor(Color.blue);
             for(int[] p : CircumferenceProvider.get(c.radius))
             {
                 int nx = c.x + p[0];
                 int ny = c.y + p[1];
                 g.drawLine(nx,ny,nx,ny);
             }
-
-            g.drawLine(c.x-2, c.y, c.x+2, c.y);
-            g.drawLine(c.x, c.y-2, c.x, c.y+2);
+            g.drawLine(c.x-1, c.y-1, c.x+1, c.y+1);
+            g.drawLine(c.x-1, c.y+1, c.x+1, c.y-1);
+            g.setColor(Color.yellow);
+            g.drawString(String.format("%.3f", c.score), c.x+3, c.y+3);
         }
 
         return image;
