@@ -20,7 +20,7 @@ public class HoughFilter
         int depth = CircumferenceProvider.getPointlists().size();
 
         // create hough space
-        int[][][] space = new int[heightWithBorder][widthWithBorder][depth];
+        int[] space = new int[heightWithBorder*widthWithBorder*depth];
         int nx,ny,ay,ax,cx,cy,radiusError;
         for(int y=0;y<height;y++)
         {
@@ -39,28 +39,28 @@ public class HoughFilter
                         {
                             nx = ax + cx;
                             ny = ay + cy;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax + cy;
                             ny = ay + cx;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax - cx;
                             ny = ay + cy;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax - cy;
                             ny = ay + cx;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax - cx;
                             ny = ay - cy;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax - cy;
                             ny = ay - cx;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax + cx;
                             ny = ay - cy;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
                             nx = ax + cy;
                             ny = ay - cx;
-                            space[ny][nx][r]++;
+                            space[(ny*widthWithBorder + nx)*depth + r]++;
 
                             cy++;
                             if (radiusError<0)
@@ -83,6 +83,7 @@ public class HoughFilter
         for(int r=0;r<depth;r++) cl[r] = CircumferenceProvider.get(CircleDetection.MIN_RADIUS + r).length;
 
         List<Circle> output = new ArrayList<>();
+
         for(int y=0;y<height;y++)
         {
             ay = y + border;
@@ -91,7 +92,7 @@ public class HoughFilter
                 ax = x + border;
                 for(int r=0;r<depth;r++)
                 {
-                    if ((space[ay][ax][r] / cl[r]) > centerThreshold)
+                    if ((space[(ay*widthWithBorder + ax) *depth + r] / cl[r]) > centerThreshold)
                     {
                         output.add(new Circle(x,y,CircleDetection.MIN_RADIUS + r));
                     }
