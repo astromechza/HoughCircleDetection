@@ -18,8 +18,8 @@ import java.util.List;
 public class CircleDetection
 {
     private static final int OVERLAP_DISTANCE_SQ = 400;
-    private static final int MIN_RADIUS = 10;
-    private static final int MAX_RADIUS = 100;
+    public static final int MIN_RADIUS = 10;
+    public static final int MAX_RADIUS = 100;
     private static final float FINAL_SCORE_THRESHOLD = 0.5f;
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 220;
@@ -109,7 +109,7 @@ public class CircleDetection
 
     private static float getCircleScore(ShortImageBuffer edges, Circle circle)
     {
-        int total = 0;
+        float total = 0;
         int pcount = 0;
         for(int[] p : CircumferenceProvider.get(circle.radius))
         {
@@ -119,9 +119,9 @@ public class CircleDetection
             if (nx >= 0 && nx < edges.getWidth() && ny >= 0 && ny < edges.getHeight())
             {
                 pcount++;
-                if (edges.get(ny, nx) != 0) total++;
+                if (edges.get(ny, nx) != 0) total+=1;
             }
         }
-        return ((float) total) / pcount;
+        return total / pcount;
     }
 }
