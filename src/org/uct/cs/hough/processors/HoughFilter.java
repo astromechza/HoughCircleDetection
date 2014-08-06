@@ -21,16 +21,16 @@ public class HoughFilter
 
         // create hough space
         int[] space = new int[heightWithBorder*widthWithBorder*depth];
-        int nx,ny,ay,ax,cx,cy,radiusError;
+        int nx,ny,ay,ax,cx,cy,radiusError,sx,sy;
         int memBOffset = widthWithBorder*depth;
         for(int y=0;y<height;y++)
         {
-            ay = y + border;
+            ay = (y + border) * memBOffset;
             for(int x=0;x<width;x++)
             {
                 if (edges.get(y,x) != 0)
                 {
-                    ax = x + border;
+                    ax = (x + border) * depth;
                     for(int r=0;r<depth;r++)
                     {
                         cx = CircleDetection.MIN_RADIUS + r;
@@ -38,36 +38,37 @@ public class HoughFilter
                         radiusError = 1-cx;
                         while(cx >= cy)
                         {
-                            nx = (ax + cx) * depth;
-                            ny = (ay + cy) * memBOffset;
+                            sx = cx * depth;
+                            sy = cy * memBOffset;
+
+                            nx = ax + sx;
+                            ny = ay + sy;
                             space[ny + nx + r]++;
-                            nx = (ax - cx) * depth;
+                            nx = ax - sx;
                             space[ny + nx + r]++;
-                            ny = (ay - cy) * memBOffset;
+                            ny = ay - sy;
                             space[ny + nx + r]++;
-                            nx = (ax + cx) * depth;
+                            nx = ax + sx;
                             space[ny + nx + r]++;
 
-                            nx = (ax + cy) * depth;
-                            ny = (ay + cx) * memBOffset;
+                            sx = cy * depth;
+                            sy = cx * memBOffset;
+
+                            nx = ax + sx;
+                            ny = ay + sy;
                             space[ny + nx + r]++;
-                            ny = (ay - cx) * memBOffset;
+                            ny = ay - sy;
                             space[ny + nx + r]++;
-                            nx = (ax - cy) * depth;
+                            nx = ax - sx;
                             space[ny + nx + r]++;
-                            ny = (ay + cx) * memBOffset;
+                            ny = ay + sy;
                             space[ny + nx + r]++;
 
                             cy++;
-                            if (radiusError<0)
-                            {
-                                radiusError += 2 * cy + 1;
-                            }
-                            else
-                            {
-                                cx--;
-                                radiusError += 2 * (cy - cx + 1);
-                            }
+
+                            if (radiusError >= 0) radiusError -= 2 * (cx--);
+
+                            radiusError += 2 * cy + 1;
                         }
                     }
                 }
