@@ -49,28 +49,112 @@ public class Circle implements Comparable<Circle>
     {
         float total = 0;
         int pcount = 0;
-        for(int[] p : CircumferenceProvider.get(this.radius))
         {
-            int nx = this.x + p[0];
-            int ny = this.y + p[1];
-
-            if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+            int py = this.radius;
+            int px = 0;
+            int d = (5-py*4)/4;
+            int nx, ny;
+            do
             {
-                pcount++;
-                if (edges.get(ny, nx) != 0) total+=1;
+                nx = this.x + px;
+                ny =  this.y + py;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+                nx = this.x - px;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+                ny =  this.y - py;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+                nx = this.x + px;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+
+                nx = this.x + py;
+                ny =  this.y + px;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+                nx = this.x - py;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+                ny =  this.y - px;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+                nx = this.x + py;
+                if (nx >= 1 && nx < edges.getWidth()-1 && ny >= 1 && ny < edges.getHeight()-1)
+                {
+                    pcount++;
+                    if (edges.get(ny, nx) != 0) total += 1;
+                }
+
+                if (d >= 0) d += - 2 * py--;
+                d += 2 * ++px;
             }
+            while(px <= py);
         }
+
         return new Circle(this.x, this.y, total / pcount, this.radius);
     }
 
     public Circle scoreNoCheck(ShortImageBuffer edges)
     {
-        float total = 0;
-        int[][] pointlist = CircumferenceProvider.get(this.radius);
-        for(int[] p : pointlist)
+        float total2 = 0;
+        int pcount2 = 0;
         {
-            if (edges.get(this.y + p[1], this.x + p[0]) != 0) total+=1;
+            int py = this.radius;
+            int px = 0;
+            int d = (5-py*4)/4;
+            int nx, ny;
+            do
+            {
+                pcount2 += 8;
+                nx = this.x + px;
+                ny = this.y + py;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+                nx = this.x - px;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+                ny = this.y - py;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+                nx = this.x + px;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+
+                nx = this.x + py;
+                ny = this.y + px;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+                nx = this.x - py;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+                ny = this.y - px;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+                nx = this.x + py;
+                if (edges.get(ny, nx) != 0) total2 += 1;
+
+                if (d >= 0) d += - 2 * py--;
+                d += 2 * ++px;
+            }
+            while(px <= py);
         }
-        return new Circle(this.x, this.y, total / pointlist.length, this.radius);
+
+        return new Circle(this.x, this.y, total2 / pcount2, this.radius);
     }
 }

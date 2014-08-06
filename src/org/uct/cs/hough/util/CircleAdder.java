@@ -15,9 +15,10 @@ public class CircleAdder
         for(Circle c : circles)
         {
             g.setColor(Color.blue);
-            int x = c.radius, y = 0;
-            int radiusError = 1-x;
-            while(x >= y)
+            int x = 0;
+            int y = c.radius;
+            int d = (5-c.radius*4)/4;
+            do
             {
                 g.drawLine(c.x+x, c.y+y, c.x+x, c.y+y);
                 g.drawLine(c.x+y, c.y+x, c.x+y, c.y+x);
@@ -27,10 +28,10 @@ public class CircleAdder
                 g.drawLine(c.x-y, c.y-x, c.x-y, c.y-x);
                 g.drawLine(c.x+x, c.y-y, c.x+x, c.y-y);
                 g.drawLine(c.x+y, c.y-x, c.x+y, c.y-x);
-                y++;
-                if (radiusError >= 0) radiusError -= 2 * (x--);
-                radiusError += 2 * y + 1;
+                if (d >= 0) d += - 2 * y--;
+                d += 2 * ++x;
             }
+            while(x <= y);
 
             g.drawLine(c.x-2, c.y-2, c.x+2, c.y+2);
             g.drawLine(c.x-2, c.y+2, c.x+2, c.y-2);

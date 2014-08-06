@@ -1,14 +1,11 @@
 package org.uct.cs.hough;
 
-import org.uct.cs.hough.display.PopUp;
 import org.uct.cs.hough.processors.HighPassFilter;
 import org.uct.cs.hough.processors.HoughFilter;
 import org.uct.cs.hough.processors.Normalizer;
 import org.uct.cs.hough.processors.SobelEdgeDetector;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
-import org.uct.cs.hough.util.CircleAdder;
-import org.uct.cs.hough.util.CircumferenceProvider;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -22,14 +19,12 @@ public class CircleDetection
     private static final int OVERLAP_DISTANCE_SQ = 400;
     public static final int MIN_RADIUS = 10;
     public static final int MAX_RADIUS = 100;
-    private static final float FINAL_SCORE_THRESHOLD = 0.75f;
+    private static final float FINAL_SCORE_THRESHOLD = 0.72f;
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 210;
 
     public static Collection<Circle> detect(BufferedImage input)
     {
-        CircumferenceProvider.initialise(MIN_RADIUS, MAX_RADIUS);
-
         // make sure the image is in BGR
         if (input.getType() != BufferedImage.TYPE_3BYTE_BGR)
         {

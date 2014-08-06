@@ -3,7 +3,6 @@ package org.uct.cs.hough.processors;
 import org.uct.cs.hough.CircleDetection;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
-import org.uct.cs.hough.util.CircumferenceProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +76,20 @@ public class HoughFilter
 
         // cache circumference lengths
         float[] cl = new float[depth];
-        for(int r=0;r<depth;r++) cl[r] = CircumferenceProvider.get(CircleDetection.MIN_RADIUS + r).length * centerThreshold;
+        for(int r=0;r<depth;r++)
+        {
+            int py = CircleDetection.MIN_RADIUS + r;
+            int px = 0;
+            int d = (5-py*4)/4;
+            do
+            {
+                cl[r] += 8;
+                if (d >= 0) d += - 2 * py--;
+                d += 2 * ++px;
+            }
+            while(px <= py);
+            cl[r] *= centerThreshold;
+        }
 
         List<Circle> output = new ArrayList<>();
            
