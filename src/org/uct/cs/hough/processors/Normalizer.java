@@ -1,7 +1,6 @@
 package org.uct.cs.hough.processors;
 
 import org.uct.cs.hough.reader.ShortImageBuffer;
-import org.uct.cs.hough.util.Constants;
 
 /** Normalizer
  * Simple class to normalize the colours in the image
@@ -13,13 +12,13 @@ public class Normalizer
         ShortImageBuffer after = input.copyShape();
 
         // calculate min and max
-        int min = Constants.BYTE;
+        int min = 0xFF;
         int max = 0;
         for(int y=0;y<input.getHeight();y++)
         {
             for(int x=0;x<input.getWidth();x++)
             {
-                int v = input.get(y, x) & Constants.BYTE;
+                int v = input.get(y, x) & 0xFF;
                 min = (v < min) ? v : min;
                 max = (v > max) ? v : max;
             }
@@ -29,14 +28,14 @@ public class Normalizer
         int diff = (max-min);
         if (diff > 0)
         {
-            float scale = ((float)Constants.BYTE) / diff;
+            float scale = ((float) 0xFF) / diff;
 
             for (int y = 0; y < input.getHeight(); y++)
             {
                 for (int x = 0; x < input.getWidth(); x++)
                 {
-                    int v = input.get(y, x) & Constants.BYTE;
-                    after.set(y, x, (short)((int)((v - min) * scale) & Constants.BYTE));
+                    int v = input.get(y, x) & 0xFF;
+                    after.set(y, x, (short)((int)((v - min) * scale) & 0xFF));
                 }
             }
         }

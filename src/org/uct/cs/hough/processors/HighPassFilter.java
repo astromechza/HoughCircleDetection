@@ -1,7 +1,6 @@
 package org.uct.cs.hough.processors;
 
 import org.uct.cs.hough.reader.ShortImageBuffer;
-import org.uct.cs.hough.util.Constants;
 
 /** HighPassFilter
  * Custom filter for filtering out any values below the given threshold
@@ -15,7 +14,7 @@ public class HighPassFilter
         {
             for(int x=0;x<input.getWidth();x++)
             {
-                int v = input.get(y, x) & Constants.BYTE;
+                int v = input.get(y, x) & 0xFF;
                 // if value is big enough, pass through
                 if (v > threshold) after.set(y, x, (short)(v));
             }

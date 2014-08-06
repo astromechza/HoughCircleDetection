@@ -7,7 +7,6 @@ import org.uct.cs.hough.processors.SobelEdgeDetector;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
 import org.uct.cs.hough.util.CircumferenceProvider;
-import org.uct.cs.hough.util.Constants;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
@@ -49,9 +48,9 @@ public class CircleDetection
             {
                 greyscale.set(y, x, (short)(
                     (
-                        (pixels[index+2] & Constants.BYTE) +
-                        (pixels[index+1] & Constants.BYTE) +
-                        (pixels[index] & Constants.BYTE)
+                        (pixels[index+2] & 0xFF) +
+                        (pixels[index+1] & 0xFF) +
+                        (pixels[index] & 0xFF)
                     )/3)
                 );
                 index += 3;
