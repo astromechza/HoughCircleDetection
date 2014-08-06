@@ -6,7 +6,7 @@ import org.uct.cs.hough.processors.Normalizer;
 import org.uct.cs.hough.processors.SobelEdgeDetector;
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
-import org.uct.cs.hough.util.Circumpherence;
+import org.uct.cs.hough.util.Circumference;
 import org.uct.cs.hough.util.Constants;
 import org.uct.cs.hough.util.IntIntPair;
 
@@ -65,23 +65,23 @@ public class CircleDetection
             ), EDGE_THRESHOLD
         );
 
-        Collection<Circumpherence> circumpherences = new ArrayList<>();
-        for (int r = MIN_RADIUS; r < MAX_RADIUS; r++) circumpherences.add(Circumpherence.build(r));
+        Collection<Circumference> circumferences = new ArrayList<>();
+        for (int r = MIN_RADIUS; r < MAX_RADIUS; r++) circumferences.add(Circumference.build(r));
 
         // setup hough filter
-        List<Circle> candidateCircles = HoughFilter.identify(edges, circumpherences, CENTER_THRESHOLD);
+        List<Circle> candidateCircles = HoughFilter.identify(edges, circumferences, CENTER_THRESHOLD);
 
         // double check
         Collection<Circle> goodCircles = new ArrayList<>();
         for (Circle c : candidateCircles)
         {
             float score = getCircleScore(edges, c);
-            float score2 = getCircleScore(edges, new Circle(c.x, c.y, Circumpherence.build(c.circumpherence.radius-1)));
+            float score2 = getCircleScore(edges, new Circle(c.x, c.y, Circumference.build(c.circumference.radius - 1)));
             float finalScore = (score + score2) / 2;
             if (finalScore > FINAL_SCORE_THRESHOLD)
             {
                 goodCircles.add(
-                    new Circle(c.x, c.y, finalScore, c.circumpherence)
+                    new Circle(c.x, c.y, finalScore, c.circumference)
                 );
             }
         }
@@ -112,7 +112,7 @@ public class CircleDetection
     {
         int total = 0;
         int pcount = 0;
-        for (IntIntPair p : circle.circumpherence.points)
+        for (IntIntPair p : circle.circumference.points)
         {
             int nx = circle.x + p.x;
             int ny = circle.y + p.y;

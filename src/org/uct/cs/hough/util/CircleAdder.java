@@ -14,7 +14,7 @@ public class CircleAdder
         g.setColor(Color.yellow);
         for(Circle c : circles)
         {
-            for(IntIntPair p : c.circumpherence.points)
+            for(IntIntPair p : c.circumference.points)
             {
                 int nx = c.x + p.x;
                 int ny = c.y + p.y;

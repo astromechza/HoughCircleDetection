@@ -3,19 +3,19 @@ package org.uct.cs.hough.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Circumpherence
+public class Circumference
 {
     public final List<IntIntPair> points = new ArrayList<>();
     public final int radius;
 
-    public Circumpherence(int r)
+    public Circumference(int r)
     {
         this.radius = r;
     }
 
-    public static Circumpherence build(int radius)
+    public static Circumference build(int radius)
     {
-        Circumpherence c = new Circumpherence(radius);
+        Circumference c = new Circumference(radius);
 
         int x = radius, y = 0;
         int radiusError = 1-x;

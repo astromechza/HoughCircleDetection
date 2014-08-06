@@ -2,7 +2,7 @@ package org.uct.cs.hough.processors;
 
 import org.uct.cs.hough.reader.ShortImageBuffer;
 import org.uct.cs.hough.util.Circle;
-import org.uct.cs.hough.util.Circumpherence;
+import org.uct.cs.hough.util.Circumference;
 import org.uct.cs.hough.util.IntIntPair;
 
 import java.util.ArrayList;
@@ -11,11 +11,11 @@ import java.util.List;
 
 public class HoughFilter
 {
-    public static List<Circle> identify(ShortImageBuffer edges, Collection<Circumpherence> circumpherences, float centerThreshold)
+    public static List<Circle> identify(ShortImageBuffer edges, Collection<Circumference> circumferences, float centerThreshold)
     {
         int height = edges.getHeight();
         int width = edges.getWidth();
-        int depth = circumpherences.size();
+        int depth = circumferences.size();
 
         // create hough space
         int[][][] space = new int[height][width][depth];
@@ -27,7 +27,7 @@ public class HoughFilter
                 if (edges.get(y,x) != 0)
                 {
                     int i = 0;
-                    for (Circumpherence c : circumpherences)
+                    for (Circumference c : circumferences)
                     {
                         for (IntIntPair p : c.points)
                         {
@@ -47,7 +47,7 @@ public class HoughFilter
             for(int x=0;x<width;x++)
             {
                 int r = 0;
-                for (Circumpherence c : circumpherences)
+                for (Circumference c : circumferences)
                 {
                     float score = ((float)(space[y][x][r])) / c.getNumPoints();
                     if (score > centerThreshold)
