@@ -46,7 +46,7 @@ public class CircleDetection
             ), EDGE_THRESHOLD
         );
 
-        Collection<Circle> circles = HoughFilter.identify(edges, CENTER_THRESHOLD);
+        Collection<Circle> circles = HoughFilter.identify(edges, MIN_RADIUS, MAX_RADIUS, CENTER_THRESHOLD);
         circles = filterOverlaps(circles);
         circles = filterFinalScoreCheck(edges, circles);
 
