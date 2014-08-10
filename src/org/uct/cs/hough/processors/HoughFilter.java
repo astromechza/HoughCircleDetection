@@ -207,6 +207,7 @@ public class HoughFilter
 
     public static void setNormaliseImagerByCircLength(boolean input)
     {
+        if (input && !createHoughAccumImage) throw new IllegalArgumentException("createHoughAccumImage must be True!");
         normaliseImagerByCircLength = input;
     }
 
