@@ -17,8 +17,8 @@ import java.util.List;
 public class CircleDetection
 {
     private static final int OVERLAP_DISTANCE_SQ = 400;
-    public static final int MIN_RADIUS = 10;
-    public static final int MAX_RADIUS = 100;
+    private static final int DEFAULT_MIN_RADIUS = 10;
+    private static final int DEFAULT_MAX_RADIUS = 100;
     private static final float FINAL_SCORE_THRESHOLD = 0.85f;
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 550;
@@ -52,16 +52,19 @@ public class CircleDetection
 
         if (storeEdgeImage) storedEdgeImage = edges.toImage();
 
-        int[] oneDHoughSpace = HoughFilter.run(edges, MIN_RADIUS, MAX_RADIUS);
+        int final_min_radius = DEFAULT_MIN_RADIUS;
+        int final_max_radius = Math.min(DEFAULT_MAX_RADIUS, Math.min(width, height));
 
-        int numRadii = MAX_RADIUS - MIN_RADIUS;
+        int[] oneDHoughSpace = HoughFilter.run(edges, final_min_radius, final_max_radius);
+
+        int numRadii = final_max_radius - final_min_radius;
         // cache circumference lengths for the next step
         // avoid expensive divide operation by caching a pre multiplied threshold version
         float[] circLength = new float[numRadii];
         float[] circLengthThreshold = new float[numRadii];
         for(int r=0;r<numRadii;r++)
         {
-            int py = MIN_RADIUS + r;
+            int py = final_min_radius + r;
             int px = 0;
             int d = (5-py*4)/4;
             do
@@ -77,26 +80,26 @@ public class CircleDetection
 
         // output list, we assume there will be around 10 circles
         List<Circle> circleCandidates = new ArrayList<>(10);
-        int memBOffset = numRadii * (width + 2*MAX_RADIUS);
+        int memBOffset = numRadii * (width + 2*final_max_radius);
         for(int y=0;y<height;y++)
         {
-            int ay = (y + MAX_RADIUS) * memBOffset;
+            int ay = (y + final_max_radius) * memBOffset;
             for(int x=0;x<width;x++)
             {
-                int ax = (x + MAX_RADIUS) * numRadii;
+                int ax = (x + final_max_radius) * numRadii;
                 for(int r=0;r<numRadii;r++)
                 {
                     float score = oneDHoughSpace[ay + ax + r];
                     if (score > circLengthThreshold[r])
                     {
-                        circleCandidates.add(new Circle(x, y, score / circLength[r], MIN_RADIUS + r));
+                        circleCandidates.add(new Circle(x, y, score / circLength[r], final_min_radius + r));
                     }
                 }
             }
         }
 
         // if we need to create an image of the accumulation landscape, enter this block
-        if (storeHoughAccumImage) createHoughAccumulatorImage((height + 2*MAX_RADIUS), (width + 2*MAX_RADIUS), numRadii, oneDHoughSpace, circLength);
+        if (storeHoughAccumImage) createHoughAccumulatorImage((height + 2*final_max_radius), (width + 2*final_max_radius), numRadii, oneDHoughSpace, circLength);
 
         Collection<Circle> circles = filterOverlaps(circleCandidates);
         circles = filterFinalScoreCheck(edges, circles);
