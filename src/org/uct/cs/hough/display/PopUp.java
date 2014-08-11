@@ -1,5 +1,7 @@
 package org.uct.cs.hough.display;
 
+import org.uct.cs.hough.gui.ScalingImagePanel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,7 +15,6 @@ public class PopUp
 {
     // defaults/constants
     private static final int TITLE_LENGTH = 20;
-    private static final int BORDER = 20;
 
     public PopUp(BufferedImage image, String title)
     {
@@ -28,9 +29,8 @@ public class PopUp
 
         // create centering panel
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(BORDER, BORDER, BORDER, BORDER));
         panel.setBackground(Color.darkGray);
-        panel.add(new ImagePanel(image), BorderLayout.CENTER);
+        panel.add(new ScalingImagePanel(image), BorderLayout.CENTER);
         panel.setSize(image.getWidth(), image.getHeight());
 
         // pack and show
@@ -45,33 +45,4 @@ public class PopUp
     {
         new PopUp(bi, title);
     }
-
-    /** ImagePanel
-     * Custom ImagePanel for showing a bufferedImage
-     */
-    private static class ImagePanel extends JPanel
-    {
-        private final BufferedImage image;
-
-        public ImagePanel(BufferedImage image)
-        {
-            this.image = image;
-            this.setSize(image.getWidth(), image.getHeight());
-        }
-
-        // draw!
-        public void paintComponent(Graphics g)
-        {
-            super.paintComponent(g);
-            g.drawImage(image, 0, 0, this);
-        }
-
-        @Override
-        public Dimension getPreferredSize()
-        {
-            return new Dimension(this.image.getWidth(), this.image.getHeight());
-        }
-    }
-
-
 }
