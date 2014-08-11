@@ -84,7 +84,7 @@ public class GuiDriver
         tabPanel3 = new ScalingImagePanel();
         tabbedPane1.addTab("Hough Space", tabPanel3);
         tabPanel4 = new ScalingImagePanel();
-        tabbedPane1.addTab("Detected Circled", tabPanel4);
+        tabbedPane1.addTab("Detected Circles", tabPanel4);
         tabbedPane1.setEnabled(false);
 
         panel1.add(tabbedPane1, BorderLayout.CENTER);
