@@ -1,6 +1,96 @@
 #################################################
-# Hough Circle Detection : README / Writeup     #
+# Hough Circle Detection: README / Write-up     #
 # Author: Ben Meier (MRXBEN001)                 #
 # Date: August 2014                             #
 #################################################
+
+Usage
+=================================================
+Either:
+1) Use the prebuilt jar files:
+
+    Command line version:
+        $ java -jar CircleDetectionCli.jar --preview <image>
+        $ java -jar CircleDetectionCli.jar --help
+
+    GUI version:
+        $ java -jar CircleDetectionGui.jar
+
+2) Make the jar files from scratch
+    $ make clean
+    $ make
+
+Overview
+=================================================
+For this project I created a program that is capable of detecting circle shapes in images. It uses a
+Hough Filter as its core detection mechanism.
+
+The program is accessible via the command line or through a GUI. The GUI allows the user to see the edge
+detection and an image of the Hough space values. The command line version allows the image to be saved
+directly to disk and is suitable for headless server environments.
+
+High level structure:
+    1) Read image
+    2) Convert to greyscale
+    3) Normalise colours (helps to amplify edges)
+    4) Run edge detection
+    5) Create Hough space
+    6) Scan for circles
+    7) Remove overlapping circles
+    8) Calculate proper scores and filter
+    9) Output...
+
+Achievements and Struggles
+=================================================
+I am very proud of the level of efficiency this program has reached. Some of the key points are:
+1) The use of an integer implementation of Bresenham/mid-point circle algorithm.
+    This algorithm for generated perimeter points of a given circle is very efficient and doesn't
+    use trigonometric functions, square-root, or even multiplication or division.
+
+2) The use of one-dimensional arrays wherever possible.
+    Multidimensional primitive-typed arrays are slower than expected due to the memory used to fetch
+    each leaf array from different locations on disk. Switching to one-dimensional arrays which are more
+    efficiently cached gave a good performance increase.
+
+3) No out-of-range checking for Hough Filter.
+    This point sacrificed memory usage for CPU performance by adding empty boundary regions to the Hough
+    space. This means range checking does not need to be done when running the Accumulator function.
+
+4) Max circle radius
+    Although the program is meant to detect arbitrarily sized circles, it is logical to limit this size.
+    The default limit is set at 100 pixels based on the sample images we were given. This can be overridden
+    in the GUI by changing the slider at the top of the window. This is capped by common sense to the minimum
+    dimension of the input image, as this is the biggest size that can be detected anyway.
+
+Struggles:
+1) At one point I investigated the possibility of checking for Circles whose midpoints are outside of the image.
+    This is possible as the Hough space already covers this area. The disadvantage is that this requires very
+    arbitrary parameter tweaking and resulted in circles that may not be circles at all. I decided to limit it
+    to circles whose midpoints are inside the frame.
+
+2) The makefile proved slightly difficult at first as it has to compile a 3rd party library into the output jar.
+    this was finally solved and I'm happy with the result.
+
+Notes
+==============================================
+1) I decided not to use a Gaussian blur.
+    Although it is common to run a Gaussian blur, in order to remove some noise from the image, I decided not
+    to use it as the sample images were already fairly clean and I was also running out of time. In a production
+    environment I would add a simple Gaussian blur filter.
+
+2) Detection of overlapping circles
+    Circles that are slightly overlapping can be detected individually, but if the midpoints are too close together,
+    the one with the worse detection score is discarded.
+
+3rd Party Code
+==============================================
+1) Apache Commons Cli library
+    I used the freely available common-cli library to create the command line interface for the Cli version. This
+    made the inclusion of optional arguments, sanitisation, and printing help output, much easier.
+
+~
+
+Thanks for a fun prac!
+
+
 

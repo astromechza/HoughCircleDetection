@@ -16,10 +16,9 @@ import java.util.List;
 
 public class CircleDetection
 {
-    private static final int OVERLAP_DISTANCE_SQ = 400;
     private static final int ABSOLUTE_MIN_RADIUS = 10;
     private static final int ABSOLUTE_MAX_RADIUS = 100;
-    private static final float FINAL_SCORE_THRESHOLD = 0.85f;
+    private static final float FINAL_SCORE_THRESHOLD = 0.8f;
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 550;
 
@@ -154,7 +153,9 @@ public class CircleDetection
                 if (c2 != c1)
                 {
                     // if the square distance is smaller than the min overlap distance
-                    if ((Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2)) < OVERLAP_DISTANCE_SQ)
+                    int overlapDistance = (int) Math.pow(Math.min(c1.radius, c2.radius), 2) / 2;
+
+                    if ((Math.pow(c2.x - c1.x, 2) + Math.pow(c2.y - c1.y, 2)) < overlapDistance)
                     {
                         if (c2.score > c1.score) hasOverlaps = true;
                         else if(c2.score == c1.score && c2.hashCode() > c1.hashCode()) hasOverlaps = true;
