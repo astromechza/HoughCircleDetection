@@ -1,7 +1,6 @@
 package org.uct.cs.hough;
 
 import org.uct.cs.hough.gui.ScalingImagePanel;
-import org.uct.cs.hough.processors.HoughFilter;
 import org.uct.cs.hough.util.Circle;
 import org.uct.cs.hough.util.CircleAdder;
 import org.uct.cs.hough.util.ImageFileFilter;

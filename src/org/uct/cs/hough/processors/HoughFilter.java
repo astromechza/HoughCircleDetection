@@ -1,21 +1,12 @@
 package org.uct.cs.hough.processors;
 
 import org.uct.cs.hough.reader.ShortImageBuffer;
-import org.uct.cs.hough.util.Circle;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * HoughFilter Class
  */
 public class HoughFilter
 {
-
-    // static variables for accessory image creation
-    private static boolean createHoughAccumImage = false;
-    private static boolean normaliseImagerByCircLength = true;
-    private static ShortImageBuffer lastHoughAccumImage;
 
     public static int[] run(ShortImageBuffer edges, final int minRadius, final int maxRadius)
     {

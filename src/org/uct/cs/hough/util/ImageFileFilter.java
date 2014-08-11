@@ -18,16 +18,8 @@ public class ImageFileFilter extends FileFilter
         if (f.isDirectory()) return true;
 
         String extension = getExtension(f);
-        if (extension != null) {
-            return extension.equals(tiff) ||
-                extension.equals(tif) ||
-                extension.equals(gif) ||
-                extension.equals(jpeg) ||
-                extension.equals(jpg) ||
-                extension.equals(png);
-        }
+        return extension != null && (extension.equals(tiff) || extension.equals(tif) || extension.equals(gif) || extension.equals(jpeg) || extension.equals(jpg) || extension.equals(png));
 
-        return false;
     }
 
     public static String getExtension(File f)
