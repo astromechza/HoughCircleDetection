@@ -17,8 +17,8 @@ import java.util.List;
 public class CircleDetection
 {
     private static final int OVERLAP_DISTANCE_SQ = 400;
-    private static final int DEFAULT_MIN_RADIUS = 10;
-    private static final int DEFAULT_MAX_RADIUS = 100;
+    private static final int ABSOLUTE_MIN_RADIUS = 10;
+    private static final int ABSOLUTE_MAX_RADIUS = 100;
     private static final float FINAL_SCORE_THRESHOLD = 0.85f;
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 550;
@@ -29,6 +29,11 @@ public class CircleDetection
     private static BufferedImage storedEdgeImage;
 
     public static Collection<Circle> detect(BufferedImage input)
+    {
+        return detect(input, ABSOLUTE_MAX_RADIUS);
+    }
+
+    public static Collection<Circle> detect(BufferedImage input, int absolute_max_radius)
     {
         int width = input.getWidth();
         int height = input.getHeight();
@@ -52,8 +57,8 @@ public class CircleDetection
 
         if (storeEdgeImage) storedEdgeImage = edges.toImage();
 
-        int final_min_radius = DEFAULT_MIN_RADIUS;
-        int final_max_radius = Math.min(DEFAULT_MAX_RADIUS, Math.min(width, height));
+        int final_min_radius = ABSOLUTE_MIN_RADIUS;
+        int final_max_radius = Math.min(absolute_max_radius, Math.min(width, height));
 
         int[] oneDHoughSpace = HoughFilter.run(edges, final_min_radius, final_max_radius);
 

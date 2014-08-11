@@ -7,6 +7,9 @@ import org.uct.cs.hough.util.ImageFileFilter;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,12 +23,14 @@ public class GuiDriver
 {
     private static final int BORDER_GAP = 5;
 
+    private JSlider radiusSlider;
     private JFrame frame;
     private JPanel panel1;
     private JTabbedPane tabbedPane1;
     private JButton loadImageButton;
     private JFileChooser imageChooser;
     private JLabel statusBar;
+    private JLabel progressBarLabel;
 
     private ScalingImagePanel tabPanel1, tabPanel2, tabPanel3, tabPanel4;
 
@@ -60,6 +65,16 @@ public class GuiDriver
                 }
             }
         );
+
+        radiusSlider.addChangeListener(
+            new ChangeListener() {
+                @Override
+                public void stateChanged(ChangeEvent e)
+                {
+                    progressBarLabel.setText("Max Circle Radius: " + radiusSlider.getValue());
+                }
+            }
+        );
     }
 
     private void createGui()
@@ -68,13 +83,42 @@ public class GuiDriver
         panel1 = new JPanel(new BorderLayout(BORDER_GAP, BORDER_GAP));
         panel1.setBorder(BorderFactory.createEmptyBorder(BORDER_GAP, BORDER_GAP, BORDER_GAP, BORDER_GAP));
 
+        JPanel panel2 = new JPanel(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        c.fill = GridBagConstraints.BOTH;
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridheight = 2;
+        c.gridwidth = 1;
+        c.weightx = 1;
+
         loadImageButton = new JButton();
         loadImageButton.setText("Load Image");
         loadImageButton.setMnemonic('L');
         loadImageButton.setDisplayedMnemonicIndex(0);
         loadImageButton.setPreferredSize(new Dimension(120, 40));
+        panel2.add(loadImageButton, c);
 
-        panel1.add(loadImageButton, BorderLayout.NORTH);
+        c.gridheight = 1;
+        c.gridx = 1;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+
+        progressBarLabel = new JLabel("Max Circle Radius: 100");
+        progressBarLabel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        progressBarLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panel2.add(progressBarLabel, c);
+
+        c.gridy = 1;
+
+        radiusSlider = new JSlider(25, 300, 100);
+        radiusSlider.setPaintLabels(true);
+        radiusSlider.setPaintTicks(true);
+        radiusSlider.setPaintTrack(true);
+        radiusSlider.setMajorTickSpacing(50);
+        radiusSlider.setMinorTickSpacing(5);
+        panel2.add(radiusSlider, c);
+
+        panel1.add(panel2, BorderLayout.NORTH);
 
         tabbedPane1 = new JTabbedPane();
         tabPanel1 = new ScalingImagePanel();
@@ -93,7 +137,6 @@ public class GuiDriver
         panel1.add(statusBar, BorderLayout.SOUTH);
 
         frame.setContentPane(panel1);
-        frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
@@ -110,7 +153,7 @@ public class GuiDriver
 
         CircleDetection.storeHoughAccumImage();
         CircleDetection.storeEdgeImage();
-        Collection<Circle> circles = CircleDetection.detect(image);
+        Collection<Circle> circles = CircleDetection.detect(image, radiusSlider.getValue());
 
         BufferedImage output = CircleAdder.combine(image, circles);
 
