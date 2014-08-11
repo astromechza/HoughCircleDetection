@@ -35,7 +35,7 @@ default: createoutdir extractlibs compileclasses compilejar
 compileclasses: $(CLASSES:.java=.class)
 
 createoutdir:
-	mkdir $(OUTDIR)
+	mkdir -p $(OUTDIR)
 
 extractlibs:
 	unzip -ud $(OUTDIR) ./lib/commons-cli-1.2.jar

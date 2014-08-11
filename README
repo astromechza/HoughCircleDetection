@@ -93,7 +93,8 @@ Notes
 2) Detection of overlapping circles
     Circles that are slightly overlapping can be detected individually, but if 
     the midpoints are too close together, the one with the worse detection score
-    is discarded.
+    is discarded. Some overlapping circles are discarded because they just do
+    not look circular.
 
 3rd Party Code
 ==============================================
