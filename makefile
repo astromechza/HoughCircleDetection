@@ -41,8 +41,10 @@ extractlibs:
 	unzip -ud $(OUTDIR) ./lib/commons-cli-1.2.jar
 
 compilejar:
-	jar cvfe CircleDetectionCli.jar org.uct.cs.hough.CliDriver -C $(OUTDIR)
+	jar cvfe CircleDetectionCli.jar org.uct.cs.hough.CliDriver -C $(OUTDIR) .
 	jar cvfe CircleDetectionGui.jar org.uct.cs.hough.GuiDriver -C $(OUTDIR) .
 
 clean:
 	rm -rf $(OUTDIR)
+	rm -f CircleDetectionCli.jar
+	rm -f CircleDetectionGui.jar
