@@ -117,7 +117,7 @@ public class GuiDriver
         tabPanel2.setImage(CircleDetection.getStoredEdgeImage());
         tabPanel3.setImage(CircleDetection.getStoredHoughAccumImage());
         tabPanel4.setImage(output);
-        tabbedPane1.setSelectedIndex(2);
+        tabbedPane1.setSelectedIndex(3);
 
 
         long elapsed = System.nanoTime() - startTime;
