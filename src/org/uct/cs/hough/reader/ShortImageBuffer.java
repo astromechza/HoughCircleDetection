@@ -49,10 +49,11 @@ public class ShortImageBuffer
         {
             for(int x=0;x<this.width;x++)
             {
-                byte v = (byte)this.get(y, x);
-                pixels[index] = v;
-                pixels[index+1] = v;
-                pixels[index+2] = v;
+                int v = (short)(this.get(y, x) & 0xFFFF);
+                byte bv = (byte)((v > 0xFF) ? 0xFF : v);
+                pixels[index] = bv;
+                pixels[index+1] = bv;
+                pixels[index+2] = bv;
                 index += 3;
             }
         }

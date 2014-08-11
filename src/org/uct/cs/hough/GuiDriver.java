@@ -26,6 +26,7 @@ public class GuiDriver
     private JTabbedPane tabbedPane1;
     private JButton loadImageButton;
     private JFileChooser imageChooser;
+    private JLabel statusBar;
 
     private ScalingImagePanel tabPanel1, tabPanel2, tabPanel3;
 
@@ -87,6 +88,9 @@ public class GuiDriver
 
         panel1.add(tabbedPane1, BorderLayout.CENTER);
 
+        statusBar = new JLabel("Press 'Load Image' to perform Circle Detection.");
+        panel1.add(statusBar, BorderLayout.SOUTH);
+
         frame.setContentPane(panel1);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -101,6 +105,8 @@ public class GuiDriver
         tabbedPane1.setEnabled(true);
         tabPanel1.setImage(image);
 
+        long startTime = System.nanoTime();
+
         HoughFilter.setCreateHoughAccumImage(true);
         Collection<Circle> circles = CircleDetection.detect(image);
 
@@ -109,6 +115,10 @@ public class GuiDriver
         tabPanel2.setImage(HoughFilter.getLastHoughAccumImage().toImage());
         tabPanel3.setImage(output);
         tabbedPane1.setSelectedIndex(2);
+
+
+        long elapsed = System.nanoTime() - startTime;
+        statusBar.setText(String.format("File: %s Elapsed: %s", f.getAbsolutePath(), org.uct.cs.hough.util.Timer.formatTime(elapsed)));
 
         frame.pack();
     }

@@ -6,9 +6,10 @@ import java.awt.image.BufferedImage;
 
 public class ScalingImagePanel extends JComponent
 {
+    private static final Color background = Color.darkGray;
+    private static final int border = 5;
+
     private BufferedImage image;
-    private final Color background = Color.darkGray;
-    private final int border = 5;
 
     public ScalingImagePanel()
     {

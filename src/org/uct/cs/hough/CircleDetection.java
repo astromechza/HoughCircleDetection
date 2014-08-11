@@ -19,9 +19,9 @@ public class CircleDetection
     private static final int OVERLAP_DISTANCE_SQ = 400;
     public static final int MIN_RADIUS = 10;
     public static final int MAX_RADIUS = 100;
-    private static final float FINAL_SCORE_THRESHOLD = 0.72f;
+    private static final float FINAL_SCORE_THRESHOLD = 0.85f;
     private static final float CENTER_THRESHOLD = 0.4f;
-    private static final int EDGE_THRESHOLD = 210;
+    private static final int EDGE_THRESHOLD = 550;
 
     public static Collection<Circle> detect(BufferedImage input)
     {
@@ -38,13 +38,11 @@ public class CircleDetection
         // convert to greyscale
         ShortImageBuffer greyscale = fromBufferedImage(input);
 
-        ShortImageBuffer edges = HighPassFilter.threshold(
-            Normalizer.norm(
-                SobelEdgeDetector.apply(
-                    Normalizer.norm(greyscale)
-                )
-            ), EDGE_THRESHOLD
+        ShortImageBuffer edges = SobelEdgeDetector.apply(
+            Normalizer.norm(greyscale)
         );
+
+        edges = HighPassFilter.threshold(edges, EDGE_THRESHOLD );
 
         Collection<Circle> circles = HoughFilter.identify(edges, MIN_RADIUS, MAX_RADIUS, CENTER_THRESHOLD);
         circles = filterOverlaps(circles);

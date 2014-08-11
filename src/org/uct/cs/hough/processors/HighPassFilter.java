@@ -14,7 +14,7 @@ public class HighPassFilter
         {
             for(int x=0;x<input.getWidth();x++)
             {
-                int v = input.get(y, x) & 0xFF;
+                int v = input.get(y, x) & 0xFFFF;
                 // if value is big enough, pass through
                 if (v > threshold) after.set(y, x, (short)(v));
             }
