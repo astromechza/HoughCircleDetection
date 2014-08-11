@@ -28,7 +28,7 @@ public class GuiDriver
     private JFileChooser imageChooser;
     private JLabel statusBar;
 
-    private ScalingImagePanel tabPanel1, tabPanel2, tabPanel3;
+    private ScalingImagePanel tabPanel1, tabPanel2, tabPanel3, tabPanel4;
 
     public GuiDriver()
     {
@@ -81,9 +81,11 @@ public class GuiDriver
         tabPanel1 = new ScalingImagePanel();
         tabbedPane1.addTab("Original", tabPanel1);
         tabPanel2 = new ScalingImagePanel();
-        tabbedPane1.addTab("Hough Space", tabPanel2);
+        tabbedPane1.addTab("Edges", tabPanel2);
         tabPanel3 = new ScalingImagePanel();
-        tabbedPane1.addTab("Detected Circles", tabPanel3);
+        tabbedPane1.addTab("Hough Space", tabPanel3);
+        tabPanel4 = new ScalingImagePanel();
+        tabbedPane1.addTab("Detected Circled", tabPanel4);
         tabbedPane1.setEnabled(false);
 
         panel1.add(tabbedPane1, BorderLayout.CENTER);
@@ -107,18 +109,20 @@ public class GuiDriver
 
         long startTime = System.nanoTime();
 
-        HoughFilter.setCreateHoughAccumImage(true);
+        CircleDetection.storeHoughAccumImage();
+        CircleDetection.storeEdgeImage();
         Collection<Circle> circles = CircleDetection.detect(image);
 
         BufferedImage output = CircleAdder.combine(image, circles);
 
-        tabPanel2.setImage(HoughFilter.getLastHoughAccumImage().toImage());
-        tabPanel3.setImage(output);
+        tabPanel2.setImage(CircleDetection.getStoredEdgeImage());
+        tabPanel3.setImage(CircleDetection.getStoredHoughAccumImage());
+        tabPanel4.setImage(output);
         tabbedPane1.setSelectedIndex(2);
 
 
         long elapsed = System.nanoTime() - startTime;
-        statusBar.setText(String.format("File: %s Elapsed: %s", f.getAbsolutePath(), org.uct.cs.hough.util.Timer.formatTime(elapsed)));
+        statusBar.setText(String.format("File: %s   |   Elapsed: %s", f.getAbsolutePath(), org.uct.cs.hough.util.Timer.formatTime(elapsed)));
 
         frame.pack();
     }

@@ -23,14 +23,20 @@ public class CircleDetection
     private static final float CENTER_THRESHOLD = 0.4f;
     private static final int EDGE_THRESHOLD = 550;
 
+    private static boolean storeHoughAccumImage = false;
+    private static BufferedImage storedHoughImage;
+    private static boolean storeEdgeImage = false;
+    private static BufferedImage storedEdgeImage;
+
     public static Collection<Circle> detect(BufferedImage input)
     {
+        int width = input.getWidth();
+        int height = input.getHeight();
+
         // make sure the image is in BGR
         if (input.getType() != BufferedImage.TYPE_3BYTE_BGR)
         {
-            int h = input.getHeight();
-            int w = input.getWidth();
-            BufferedImage midway = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
+            BufferedImage midway = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
             midway.getGraphics().drawImage(input, 0, 0, null);
             input = midway;
         }
@@ -44,8 +50,55 @@ public class CircleDetection
 
         edges = HighPassFilter.threshold(edges, EDGE_THRESHOLD );
 
-        Collection<Circle> circles = HoughFilter.identify(edges, MIN_RADIUS, MAX_RADIUS, CENTER_THRESHOLD);
-        circles = filterOverlaps(circles);
+        if (storeEdgeImage) storedEdgeImage = edges.toImage();
+
+        int[] oneDHoughSpace = HoughFilter.run(edges, MIN_RADIUS, MAX_RADIUS);
+
+        int numRadii = MAX_RADIUS - MIN_RADIUS;
+        // cache circumference lengths for the next step
+        // avoid expensive divide operation by caching a pre multiplied threshold version
+        float[] circLength = new float[numRadii];
+        float[] circLengthThreshold = new float[numRadii];
+        for(int r=0;r<numRadii;r++)
+        {
+            int py = MIN_RADIUS + r;
+            int px = 0;
+            int d = (5-py*4)/4;
+            do
+            {
+                circLength[r] += 8;
+                if (d >= 0) d += - 2 * py--;
+                d += 2 * ++px;
+            }
+            while(px <= py);
+            // premultiply
+            circLengthThreshold[r] = circLength[r] * CENTER_THRESHOLD;
+        }
+
+        // output list, we assume there will be around 10 circles
+        List<Circle> circleCandidates = new ArrayList<>(10);
+        int memBOffset = numRadii * (width + 2*MAX_RADIUS);
+        for(int y=0;y<height;y++)
+        {
+            int ay = (y + MAX_RADIUS) * memBOffset;
+            for(int x=0;x<width;x++)
+            {
+                int ax = (x + MAX_RADIUS) * numRadii;
+                for(int r=0;r<numRadii;r++)
+                {
+                    float score = oneDHoughSpace[ay + ax + r];
+                    if (score > circLengthThreshold[r])
+                    {
+                        circleCandidates.add(new Circle(x, y, score / circLength[r], MIN_RADIUS + r));
+                    }
+                }
+            }
+        }
+
+        // if we need to create an image of the accumulation landscape, enter this block
+        if (storeHoughAccumImage) createHoughAccumulatorImage((height + 2*MAX_RADIUS), (width + 2*MAX_RADIUS), numRadii, oneDHoughSpace, circLength);
+
+        Collection<Circle> circles = filterOverlaps(circleCandidates);
         circles = filterFinalScoreCheck(edges, circles);
 
         return circles;
@@ -127,5 +180,58 @@ public class CircleDetection
             }
         }
         return output;
+    }
+
+    private static void createHoughAccumulatorImage(int heightWithBorder, int widthWithBorder, int depth, int[] space, float[] circLength)
+    {
+        // output container
+        ShortImageBuffer image = new ShortImageBuffer(heightWithBorder, widthWithBorder);
+
+        // now we loop through the image to create the pixels
+        int index = 0;
+        for(int y=0;y<heightWithBorder;y++)
+        {
+            for(int x=0;x<widthWithBorder;x++)
+            {
+                // we are using a 2d image to represent a 3d array, so we choose the brightest pixel
+                float bestScore = 0;
+                for(int r=0;r<depth;r++)
+                {
+                    // choose the correct normaliser
+                    float divisor = circLength[r];
+                    float score = space[index] / divisor;
+                    if (score > bestScore) bestScore = score;
+                    index++;
+                }
+
+                // cap the value between 0 and 1
+                bestScore = Math.min(1, Math.max(0, bestScore));
+                // create final pixel
+                image.set(y, x, (short)(bestScore * 0xFF));
+            }
+        }
+
+        // store
+        storedHoughImage = image.toImage();
+    }
+
+    public static void storeEdgeImage()
+    {
+        storeEdgeImage = true;
+    }
+
+    public static void storeHoughAccumImage()
+    {
+        storeHoughAccumImage = true;
+    }
+
+    public static BufferedImage getStoredHoughAccumImage()
+    {
+        return storedHoughImage;
+    }
+
+    public static BufferedImage getStoredEdgeImage()
+    {
+        return storedEdgeImage;
     }
 }
