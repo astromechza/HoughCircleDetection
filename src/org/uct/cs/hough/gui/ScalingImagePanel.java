@@ -8,7 +8,7 @@ public class ScalingImagePanel extends JComponent
 {
     private BufferedImage image;
     private final Color background = Color.darkGray;
-    private final int border = 30;
+    private final int border = 5;
 
     public ScalingImagePanel()
     {
@@ -41,7 +41,8 @@ public class ScalingImagePanel extends JComponent
     @Override
     public Dimension getMinimumSize()
     {
-        return this.getPreferredSize();
+        if(this.image == null) return new Dimension(500, 100);
+        return new Dimension(this.image.getWidth() + 2*border, 300);
     }
 
     @Override
