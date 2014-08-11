@@ -10,11 +10,10 @@ OUTDIR = bin
 	$(JC) -sourcepath src -classpath $(OUTDIR) -d $(OUTDIR) $(JFLAGS) $*.java
 
 CLASSES = \
-	src/org/uct/cs/hough/util/Constants.java \
-	src/org/uct/cs/hough/util/IntIntPair.java \
-	src/org/uct/cs/hough/util/Circumpherence.java \
 	src/org/uct/cs/hough/util/Circle.java \
 	src/org/uct/cs/hough/util/CircleAdder.java \
+	src/org/uct/cs/hough/util/Timer.java \
+	src/org/uct/cs/hough/util/ImageFileFilter.java \
 	src/org/uct/cs/hough/writer/ImageWriter.java \
 	src/org/uct/cs/hough/display/PopUp.java \
 	src/org/uct/cs/hough/reader/ShortImageBuffer.java \
@@ -23,6 +22,8 @@ CLASSES = \
 	src/org/uct/cs/hough/processors/SobelEdgeDetector.java \
 	src/org/uct/cs/hough/processors/HoughFilter.java \
 	src/org/uct/cs/hough/CircleDetection.java \
+	src/org/uct/cs/hough/gui/ScalingImagePanel.java \
+	src/org/uct/cs/hough/GuiDriver.java \
 	src/org/uct/cs/hough/CliDriver.java
 
 ######################
@@ -40,7 +41,8 @@ extractlibs:
 	unzip -ud $(OUTDIR) ./lib/commons-cli-1.2.jar
 
 compilejar:
-	jar cvfe CircleDetection.jar org.uct.cs.hough.CliDriver -C $(OUTDIR) .
+	jar cvfe CircleDetectionCli.jar org.uct.cs.hough.CliDriver -C $(OUTDIR)
+	jar cvfe CircleDetectionGui.jar org.uct.cs.hough.GuiDriver -C $(OUTDIR) .
 
 clean:
 	rm -rf $(OUTDIR)
