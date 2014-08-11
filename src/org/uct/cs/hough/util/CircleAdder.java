@@ -12,9 +12,9 @@ public class CircleAdder
 
         g.drawImage(layer, 0, 0, null);
         g.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 9));
+        g.setColor(Color.yellow);
         for(Circle c : circles)
         {
-            g.setColor(Color.blue);
             int x = 0;
             int y = c.radius;
             int d = (5-c.radius*4)/4;
@@ -35,8 +35,6 @@ public class CircleAdder
 
             g.drawLine(c.x-2, c.y-2, c.x+2, c.y+2);
             g.drawLine(c.x-2, c.y+2, c.x+2, c.y-2);
-            g.setColor(Color.yellow);
-            g.drawString(String.format("%.3f", c.score), c.x-12, c.y+12);
         }
 
         return image;
